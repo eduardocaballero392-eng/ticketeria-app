@@ -95,7 +95,11 @@ class UsuarioController extends Controller
         'correo'           => 'required|email|unique:usuario,correo,' . $usuario->id_usuario . ',id_usuario',
         'telefono'         => 'required|digits_between:7,15',
         'nueva_contraseña' => 'nullable|min:6',
-        'codigo_pais'      => 'required|string|max:10',
+        'codigo_pais' => [
+        'required',
+        'regex:/^\+?\d{1,4}$/',
+        'max:10'
+        ],
     ], [
         'nombre.required'           => 'El nombre es obligatorio.',
         'nombre.string'             => 'El nombre debe ser un texto válido.',
@@ -111,6 +115,8 @@ class UsuarioController extends Controller
         'correo.email'              => 'El correo electrónico no tiene un formato válido.',
         'correo.unique'             => 'Este correo ya está registrado en otro usuario.',
         'telefono.required'         => 'El número de teléfono es obligatorio.',
+        'codigo_pais.required' => 'El código de país es obligatorio.',
+        'codigo_pais.regex'    => 'El código de país debe tener formato válido (ej: +51, 51, +1).',
         'telefono.digits_between'   => 'El teléfono debe tener entre 7 y 15 dígitos numéricos.',
         'nueva_contraseña.min'      => 'La nueva contraseña debe tener al menos 6 caracteres.',
     ]);
