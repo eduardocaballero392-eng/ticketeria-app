@@ -89,11 +89,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('tecnico')->name('tecnico.')->group(function () {
 
     Route::get('/dashboard',   [TecnicoController::class, 'dashboard'])->name('dashboard');
-Route::get('/datos',         [TecnicoController::class, 'datos'])->name('datos');
-Route::post('/datos/update', [TecnicoController::class, 'update'])->name('update');    Route::get('/mis-tickets', [TecnicoController::class, 'misTickets'])->name('mistickets');
-
+    Route::get('/datos',         [TecnicoController::class, 'datos'])->name('datos');
+    Route::post('/datos/update', [TecnicoController::class, 'update'])->name('update');    
+    Route::get('/mis-tickets', [TecnicoController::class, 'misTickets'])->name('mistickets');
     Route::post('/datos/update', [TecnicoController::class, 'update'])->name('update');
     Route::post('/logout',       [TecnicoController::class, 'logout'])->name('logout');
+    Route::get('/contactos', [TecnicoController::class, 'contactos'])->name('contactos');
+
 
     Route::post('/ticket/{id}/autoasignar',   [TecnicoController::class, 'autoAsignar'])->name('ticket.autoasignar');
     Route::get('/ticket/{id}/detalle',        [TecnicoController::class, 'detalleTicket'])->name('ticket.detalle');
