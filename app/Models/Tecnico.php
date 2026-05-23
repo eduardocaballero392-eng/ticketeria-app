@@ -27,6 +27,8 @@ class Tecnico extends Authenticatable
         'contraseña',
         'id_cargo',
         'activo',
+        'telefono',
+        'codigo_pais',
     ];
 
     protected $hidden = [

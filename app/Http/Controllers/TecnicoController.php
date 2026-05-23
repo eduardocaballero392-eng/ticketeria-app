@@ -230,6 +230,81 @@ class TecnicoController extends Controller
         return response()->json($ticket);
     }
 
+    public function update(Request $request)
+{
+    // 1. Validar sesión (igual que en otros métodos)
+    if (session('tipo') !== 'tecnico' || !session('id')) {
+        return redirect('/')->with('error', 'Acceso restringido.');
+    }
+
+    // 2. Obtener el técnico
+    $tecnico = \App\Models\Tecnico::find(session('id'));
+    
+    if (!$tecnico) {
+        session()->flush();
+        return redirect('/')->with('error', 'Técnico no encontrado.');
+    }
+
+    // 3. Validar datos (IDÉNTICO a UsuarioController, adaptado)
+    $validator = Validator::make($request->all(), [
+        'nombre'           => 'required|string|max:100',
+        'apellido_paterno' => 'required|string|max:100',
+        'apellido_materno' => 'required|string|max:100',
+        'correo'           => 'required|email|unique:tecnico,correo,' . $tecnico->id_tecnico . ',id_tecnico',
+        'telefono'         => 'required|digits_between:7,15',
+        'nueva_contraseña' => 'nullable|min:6',
+        'codigo_pais' => [
+        'required',
+        'regex:/^\+?\d{1,4}$/',  // ← Solo permite: + opcional + 1 a 4 números
+        'max:10'  // ← Por seguridad extra
+        ],
+    ], [
+        'nombre.required'           => 'El nombre es obligatorio.',
+        'nombre.string'             => 'El nombre debe ser un texto válido.',
+        'nombre.max'                => 'El nombre no puede superar los 100 caracteres.',
+        'apellido_paterno.required' => 'El apellido paterno es obligatorio.',
+        'apellido_paterno.string'   => 'El apellido paterno debe ser un texto válido.',
+        'apellido_paterno.max'      => 'El apellido paterno no puede superar los 100 caracteres.',
+        'apellido_materno.required' => 'El apellido materno es obligatorio.',
+        'apellido_materno.string'   => 'El apellido materno debe ser un texto válido.',
+        'apellido_materno.max'      => 'El apellido materno no puede superar los 100 caracteres.',
+        'correo.required'           => 'El correo electrónico es obligatorio.',
+        'correo.email'              => 'El correo electrónico no tiene un formato válido.',
+        'correo.unique'             => 'Este correo ya está registrado en otro técnico.',
+        'telefono.required'         => 'El número de teléfono es obligatorio.',
+        'telefono.digits_between'   => 'El teléfono debe tener entre 7 y 15 dígitos numéricos.',
+        'nueva_contraseña.min'      => 'La nueva contraseña debe tener al menos 6 caracteres.',
+        'codigo_pais.required' => 'El código de país es obligatorio.',
+        'codigo_pais.regex'    => 'El código de país debe tener formato válido (ej: +51, 51, +1).',
+    ]);
+
+    if ($validator->fails()) {
+        return back()->with('error', $validator->errors()->first());
+    }
+
+    // 4. Actualizar campos (con formato igual que UsuarioController)
+    $tecnico->nombre           = ucfirst(strtolower($request->nombre));
+    $tecnico->apellido_paterno = ucfirst(strtolower($request->apellido_paterno));
+    $tecnico->apellido_materno = ucfirst(strtolower($request->apellido_materno));
+    $tecnico->correo           = $request->correo;
+    $tecnico->codigo_pais      = $request->codigo_pais ?? '';
+    $tecnico->telefono         = $request->telefono;
+
+    // 5. Actualizar contraseña si se proporcionó
+    if ($request->filled('nueva_contraseña')) {
+        $tecnico->contraseña = Hash::make($request->nueva_contraseña);
+    }
+
+    // 6. Guardar (usando save() como en UsuarioController)
+    $tecnico->save();
+
+    // 7. Actualizar sesión con el nuevo nombre
+    session(['nombre' => $tecnico->nombre]);
+
+    // 8. Redirigir con mensaje de éxito (igual que UsuarioController)
+    return back()->with('success', 'Perfil actualizado correctamente.');
+}
+
     public function editarCamposTicket(Request $request, $id)
     {
         if (session('tipo') !== 'tecnico' || !session('id')) {
