@@ -560,11 +560,11 @@
         <span class="sb-tooltip">Mis Tickets</span>
     </a>
 
-    <a href="#"
-       class="sb-nav-item {{ Route::is('tecnico.mail') ? 'active' : '' }}">
-      <span class="sb-nav-icon"><i class="fa-solid fa-envelope"></i></span>
-      <span class="sb-nav-text">Mail</span>
-      <span class="sb-tooltip">Mail</span>
+    <a href="{{ route('tecnico.contactos') }}"
+      class="sb-nav-item {{ Route::is('tecnico.contactos') ? 'active' : '' }}">
+        <span class="sb-nav-icon"><i class="fa-solid fa-envelope"></i></span>
+        <span class="sb-nav-text">Contactos</span>
+        <span class="sb-tooltip">Contactos</span>
     </a>
 
   </nav>
