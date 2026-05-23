@@ -32,4 +32,9 @@ class Usuario extends Model
     protected $hidden = [
         'contraseña',
     ];
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'id_cliente');
+    }
 }
