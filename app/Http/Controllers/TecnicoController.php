@@ -426,11 +426,11 @@ class TecnicoController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'archivo' => 'required|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:10240',
+                'archivo' => 'required|file|mimes:jpg,jpeg,png,gif,webp,pdf,doc,docx|max:10240',
             ], [
                 'archivo.required' => 'Debes adjuntar un archivo.',
                 'archivo.file'     => 'El archivo no es válido.',
-                'archivo.mimes'    => 'Solo se permiten archivos JPG, PNG, GIF, WEBP o PDF.',
+                'archivo.mimes'    => 'Solo se permiten imágenes (JPG, PNG, GIF, WEBP), PDF, DOC o DOCX.',
                 'archivo.max'      => 'El archivo no puede superar los 5 MB.',
             ]);
 
