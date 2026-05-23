@@ -63,7 +63,7 @@ class TicketController extends Controller
     'problema.required'       => 'La descripción del problema es obligatoria.',
     'asunto.max'              => 'El asunto no puede superar los 255 caracteres.',
     'evidencia.max'           => 'No puedes subir más de 5 archivos.',
-    'evidencia.*.mimes'       => 'Solo se permiten archivos JPG, PNG, PDF, MP4, MOV, DOC o DOCX..',
+    'evidencia.*.mimes'       => 'Solo se permiten archivos JPG, PNG, PDF, MP4, MOV, DOC o DOCX.',
     'evidencia.*.max'         => 'Cada archivo no puede superar los 20 MB.',
 ]);
 
