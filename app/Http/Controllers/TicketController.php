@@ -54,7 +54,7 @@ class TicketController extends Controller
 
     // Evidencia opcional
     'evidencia'      => 'nullable|array|max:5',
-    'evidencia.*'    => 'file|mimes:jpg,jpeg,png,pdf,mp4,mov|max:20480',
+    'evidencia.*'    => 'file|mimes:jpg,jpeg,png,pdf,mp4,mov,doc,docx|max:20480',
 ], [
     'id_tipo_ticket.required' => 'El tipo de ticket es obligatorio.',
     'id_tipo_ticket.exists'   => 'El tipo de ticket no es válido.',
@@ -63,7 +63,7 @@ class TicketController extends Controller
     'problema.required'       => 'La descripción del problema es obligatoria.',
     'asunto.max'              => 'El asunto no puede superar los 255 caracteres.',
     'evidencia.max'           => 'No puedes subir más de 5 archivos.',
-    'evidencia.*.mimes'       => 'Solo se permiten archivos JPG, PNG, PDF, MP4 o MOV.',
+    'evidencia.*.mimes'       => 'Solo se permiten archivos JPG, PNG, PDF, MP4, MOV, DOC o DOCX..',
     'evidencia.*.max'         => 'Cada archivo no puede superar los 20 MB.',
 ]);
 
