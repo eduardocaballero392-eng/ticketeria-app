@@ -559,4 +559,17 @@ class TecnicoController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    public function contactos()
+    {
+        if (session('tipo') !== 'tecnico' || !session('id')) {
+            return redirect('/')->with('error', 'Acceso restringido.');
+        }
+
+        $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+        $usuarios = Usuario::with('cliente')->orderBy('nombre')->get();
+
+        return view('tecnico.contactos', compact('clientes', 'usuarios'));
+    }
+    
 }
