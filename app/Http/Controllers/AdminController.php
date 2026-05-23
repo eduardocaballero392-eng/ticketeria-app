@@ -907,4 +907,16 @@ class AdminController extends Controller
      
         return response()->json(['ok' => true]);
     }
+    
+    public function contactos()
+    {
+        if (session('tipo') !== 'admin' || !session('id')) {
+            return redirect('/')->with('error', 'Acceso restringido.');
+        }
+
+        $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+        $usuarios = Usuario::with('cliente')->orderBy('nombre')->get();
+
+        return view('admin.contactos', compact('clientes', 'usuarios'));
+    }
 }
