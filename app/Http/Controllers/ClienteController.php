@@ -313,4 +313,19 @@ public function storeUsuario(Request $request)
     
         return view('cliente.mistickets', compact('cliente', 'usuarios', 'tickets', 'ticketsPorUsuario'));
     }
+
+    public function contactos()
+{
+    if (session('tipo') !== 'cliente' || !session('id')) {
+        return redirect('/')->with('error', 'Debes iniciar sesión como empresa.');
+    }
+
+    $cliente  = Cliente::find(session('id'));
+    $usuarios = Usuario::where('id_cliente', $cliente->id_cliente)
+                    ->orderBy('activo', 'desc')
+                    ->orderBy('nombre')
+                    ->get();
+
+    return view('cliente.contactos', compact('cliente', 'usuarios'));
+}
 }
