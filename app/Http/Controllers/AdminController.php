@@ -102,53 +102,55 @@ class AdminController extends Controller
         return response()->json(['ok' => true]);
     }
 
-   public function crearCliente(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'razon_social' => 'required|string|max:200',
-        'ruc'          => 'required|string|size:11|unique:cliente,ruc',
-        'correo'       => 'required|email|max:150|unique:cliente,correo',
-        'contrasena'   => 'required|string',
-        'sedes'        => 'nullable|string|max:200',
-        'rubro'        => 'nullable|string|max:100',
-    ], [
-        'razon_social.required' => 'La razón social es obligatoria.',
-        'razon_social.max'      => 'La razón social no debe exceder los 200 caracteres.',
-        'ruc.required'          => 'El RUC es obligatorio.',
-        'ruc.size'              => 'El RUC debe tener exactamente 11 dígitos.',
-        'ruc.unique'            => 'El RUC ingresado ya se encuentra registrado.',
-        'correo.required'       => 'El correo electrónico es obligatorio.',
-        'correo.email'          => 'El formato del correo electrónico no es válido.',
-        'correo.max'            => 'El correo electrónico no debe exceder los 150 caracteres.',
-        'correo.unique'         => 'Este correo electrónico ya está registrado.',
-        'contrasena.required'   => 'La contraseña es obligatoria.',
-        'sedes.max'             => 'El campo sedes no debe exceder los 200 caracteres.',
-        'rubro.max'             => 'El campo rubro no debe exceder los 100 caracteres.',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json(['ok' => false, 'errors' => $validator->errors()], 422);
-    }
-
-    try {
-        DB::table('cliente')->insert([
-            'razon_social' => $request->razon_social,
-            'ruc'          => $request->ruc,
-            'sedes'        => $request->sedes,
-            'rubro'        => $request->rubro,
-            'correo'       => $request->correo,
-            'contraseña'   => Hash::make($request->contrasena),
-            'activo'       => 1,
-            'created_at'   => now(),
-            'updated_at'   => now(),
+  public function crearCliente(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'razon_social' => 'required|string|max:200',
+            'ruc'          => 'required|string|size:11|unique:cliente,ruc',
+            'correo'       => 'required|email|max:150|unique:cliente,correo',
+            'contrasena'   => 'required|string',
+            'sedes'        => 'nullable|string|max:200',
+            'rubro'        => 'required|string|max:100', // 🔥 CAMBIADO de 'nullable' a 'required'
+        ], [
+            'razon_social.required' => 'La razón social es obligatoria.',
+            'razon_social.max'      => 'La razón social no debe exceder los 200 caracteres.',
+            'ruc.required'          => 'El RUC es obligatorio.',
+            'ruc.size'              => 'El RUC debe tener exactamente 11 dígitos.',
+            'ruc.unique'            => 'El RUC ingresado ya se encuentra registrado.',
+            'correo.required'       => 'El correo electrónico es obligatorio.',
+            'correo.email'          => 'El formato del correo electrónico no es válido.',
+            'correo.max'            => 'El correo electrónico no debe exceder los 150 caracteres.',
+            'correo.unique'         => 'Este correo electrónico ya está registrado.',
+            'contrasena.required'   => 'La contraseña es obligatoria.',
+            'sedes.max'             => 'El campo sedes no debe exceder los 200 caracteres.',
+            'rubro.required'        => 'El rubro de la empresa es obligatorio y debe tener un parámetro válido.', // 🔥 Mensaje en español
+            'rubro.max'             => 'El campo rubro no debe exceder los 100 caracteres.',
         ]);
 
-        return response()->json(['ok' => true]);
+        if ($validator->fails()) {
+            // Devuelve los errores al JavaScript de tu página web con código 422
+            return response()->json(['ok' => false, 'errors' => $validator->errors()], 422);
+        }
 
-    } catch (\Exception $e) {
-        return response()->json(['ok' => false, 'message' => $e->getMessage()], 500);
+        try {
+            DB::table('cliente')->insert([
+                'razon_social' => $request->razon_social,
+                'ruc'          => $request->ruc,
+                'sedes'        => $request->sedes,
+                'rubro'        => $request->rubro,
+                'correo'       => $request->correo,
+                'contraseña'   => Hash::make($request->contrasena),
+                'activo'       => 1,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+
+            return response()->json(['ok' => true]);
+
+        } catch (\Exception $e) {
+            return response()->json(['ok' => false, 'message' => $e->getMessage()], 500);
+        }
     }
-}
     public function guardarUsuario(Request $request)
 {
     $validator = Validator::make($request->all(), [
