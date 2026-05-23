@@ -791,10 +791,10 @@ class AdminController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'archivo' => 'required|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:5120',
+                'archivo' => 'required|file|mimes:jpg,jpeg,png,gif,webp,pdf,doc,docx|max:5120',
             ], [
                 'archivo.required' => 'El archivo del reporte es obligatorio.',
-                'archivo.mimes'    => 'El archivo debe ser una imagen válida o un documento PDF.',
+                'archivo.mimes'    => 'Solo se permiten imágenes (JPG, PNG, GIF, WEBP), PDF, DOC o DOCX.',
                 'archivo.max'      => 'El tamaño máximo permitido para el archivo es de 5MB.',
             ]);
 
