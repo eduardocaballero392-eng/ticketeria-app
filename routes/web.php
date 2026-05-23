@@ -29,6 +29,8 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/mistickets',    [ClienteController::class, 'tickets'])->name('tickets');
     Route::post('/ticket',       [TicketController::class, 'store'])->name('ticket.store');
     Route::get('/cliente/mistickets', [ClienteController::class, 'mistickets']);
+    Route::get('/contactos',  [ClienteController::class, 'contactos'])->name('contactos');
+
 
     // Gestión de usuarios
     Route::get('/usuarios',              [ClienteController::class, 'usuarios'])->name('usuarios');
