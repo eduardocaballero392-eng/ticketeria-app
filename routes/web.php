@@ -50,7 +50,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/asignarticket', [AdminController::class, 'asignarticket'])->name('asignarticket');
     Route::get('/clientes',      [AdminController::class, 'clientes'])->name('clientes');
     Route::get('/mis-tickets',   [AdminController::class, 'misTickets'])->name('mistickets');
+    Route::get('/contactos', [AdminController::class, 'contactos'])->name('contactos');
 
+    
     // Logout
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 
