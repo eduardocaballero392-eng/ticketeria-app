@@ -16,91 +16,237 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
 
 /* ══ HEADER ══ */
 .mt-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
-.mt-header h1 { font-size: 22px; font-weight: 700; color: #0a2540; margin: 0; }
-.mt-header-sub { font-size: 13px; color: #64748b; margin-top: 2px; }
+.mt-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0a2540;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.mt-header-sub {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+}
 
-/* ══ PANEL USUARIOS ══ */
+/* ══ PANEL USUARIOS MEJORADO ══ */
 .mt-panel {
     background: #fff;
     border: 1px solid #dbe4f0;
-    border-radius: 14px;
-    margin-bottom: 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .mt-panel-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
     border-bottom: 1px solid #f0f4fa;
-    gap: 12px; flex-wrap: wrap;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #ffffff;
 }
 .mt-panel-title {
-    font-size: 12px; font-weight: 700; color: #1e3a5f;
-    text-transform: uppercase; letter-spacing: .07em;
-    display: flex; align-items: center; gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e3a5f;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 .mt-panel-icon {
-    width: 24px; height: 24px; border-radius: 6px;
-    background: #dbeafe; color: #1d4ed8;
-    display: flex; align-items: center; justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+}
+
+/* Selector rápido de usuarios */
+.mt-user-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #f8fafd 0%, #ffffff 100%);
+    padding: 6px 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.mt-user-selector .selector-icon {
+    font-size: 18px;
+}
+.mt-user-select {
+    border: none;
+    background: transparent;
+    padding: 8px 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #0a2540;
+    cursor: pointer;
+    outline: none;
+    min-width: 220px;
+}
+.mt-user-select option {
+    padding: 10px;
+    font-size: 13px;
+}
+.mt-user-selector .selector-badge {
+    background: #185FA515;
+    color: #185FA5;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
 }
 
 /* Buscador usuarios */
 .mt-user-search {
-    display: flex; align-items: center; gap: 8px;
-    background: #f8fafd; border: 1px solid #e8eef8;
-    border-radius: 8px; padding: 7px 13px;
-    min-width: 240px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafd;
+    border: 1px solid #e8eef8;
+    border-radius: 10px;
+    padding: 8px 15px;
+    min-width: 250px;
+    transition: all 0.2s;
+}
+.mt-user-search:focus-within {
+    border-color: #185FA5;
+    box-shadow: 0 0 0 3px #185FA520;
 }
 .mt-user-search input {
-    border: none; outline: none; font-size: 13px;
-    background: transparent; color: #0a2540; width: 100%;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: transparent;
+    color: #0a2540;
+    width: 100%;
+}
+.mt-user-search input::placeholder {
+    color: #94a3b8;
 }
 
 /* Grid usuarios */
 .mt-users-grid {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    padding: 16px 20px;
-    max-height: 220px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 20px 24px;
+    max-height: 280px;
     overflow-y: auto;
 }
-.mt-users-grid::-webkit-scrollbar { width: 4px; }
-.mt-users-grid::-webkit-scrollbar-thumb { background: #c8d8f0; border-radius: 99px; }
+.mt-users-grid::-webkit-scrollbar {
+    width: 5px;
+}
+.mt-users-grid::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+.mt-users-grid::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
 
 .mt-user-card {
-    display: flex; align-items: center; gap: 10px;
-    background: #f8fafd; border: 1.5px solid #e8eef8;
-    border-radius: 12px; padding: 10px 14px;
-    cursor: pointer; transition: all .15s;
-    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+    border: 1.5px solid #e8eef8;
+    border-radius: 14px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 240px;
+    flex: 1 0 auto;
+    max-width: calc(33% - 12px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
-.mt-user-card:hover { border-color: #93c5fd; background: #eff6ff; }
+.mt-user-card:hover {
+    border-color: #93c5fd;
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
 .mt-user-card.active {
-    border-color: #185FA5; background: #dbeafe;
+    border-color: #185FA5;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
     box-shadow: 0 0 0 3px #185FA520;
 }
 .mt-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #1254a0, #1a6ed8);
-    color: #fff; display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700; flex-shrink: 0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.mt-user-info { min-width: 0; }
-.mt-user-name { font-size: 13px; font-weight: 600; color: #0a2540; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-.mt-user-code { font-size: 11px; color: #64748b; font-family: monospace; }
+.mt-user-info {
+    min-width: 0;
+    flex: 1;
+}
+.mt-user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a2540;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    margin-bottom: 3px;
+}
+.mt-user-code {
+    font-size: 11px;
+    color: #64748b;
+    font-family: monospace;
+}
 .mt-user-tcount {
-    margin-left: auto; font-size: 11px; font-weight: 600;
-    background: #185FA515; color: #185FA5;
-    padding: 2px 8px; border-radius: 20px; flex-shrink: 0;
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 700;
+    background: #185FA515;
+    color: #185FA5;
+    padding: 4px 10px;
+    border-radius: 30px;
+    flex-shrink: 0;
+    transition: all 0.2s;
 }
-.mt-user-card.active .mt-user-tcount { background: #185FA5; color: #fff; }
-
+.mt-user-card.active .mt-user-tcount {
+    background: #185FA5;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 .mt-no-users {
-    padding: 20px; text-align: center;
-    color: #94a3b8; font-size: 13px; font-style: italic;
+    padding: 40px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    font-style: italic;
     width: 100%;
 }
 
@@ -108,145 +254,305 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
 .mt-tickets-section {
     background: #fff;
     border: 1px solid #dbe4f0;
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 /* Usuario seleccionado header */
 .mt-sel-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
     border-bottom: 1px solid #f0f4fa;
-    flex-wrap: wrap; gap: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
     background: linear-gradient(135deg, #0f4a8a 0%, #1a6ed8 100%);
 }
 .mt-sel-user {
-    display: flex; align-items: center; gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 .mt-sel-avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(255,255,255,.2); border: 1.5px solid rgba(255,255,255,.4);
-    color: #fff; display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    border: 2px solid rgba(255,255,255,.5);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
 }
-.mt-sel-name  { font-size: 14px; font-weight: 700; color: #fff; }
-.mt-sel-code  { font-size: 11px; color: rgba(255,255,255,.7); font-family: monospace; }
+.mt-sel-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+}
+.mt-sel-code {
+    font-size: 11px;
+    color: rgba(255,255,255,.8);
+    font-family: monospace;
+    margin-top: 2px;
+}
 
-/* Estado filtros */
+/* FILTRO ESTADOS - SELECT MEJORADO */
 .mt-estado-bar {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    padding: 14px 20px;
+    padding: 16px 24px;
     border-bottom: 1px solid #f0f4fa;
+    background: #fafcff;
 }
-.mt-est-btn {
-    padding: 5px 14px; border-radius: 20px;
-    font-size: 12px; font-weight: 500;
-    cursor: pointer; border: 1.5px solid transparent;
-    transition: all .15s;
+.mt-estado-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
-.mt-est-btn.active-all        { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
-.mt-est-btn.e-PENDIENTE       { background: #f3f0ff; color: #7c3aed; border-color: #ddd6fe; }
-.mt-est-btn.e-PENDIENTE.sel   { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-.mt-est-btn.e-PROGRAMADO      { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-.mt-est-btn.e-PROGRAMADO.sel  { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
-.mt-est-btn.e-EN-PROCESO      { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
-.mt-est-btn.e-EN-PROCESO.sel  { background: #c2410c; color: #fff; border-color: #c2410c; }
-.mt-est-btn.e-CERRADO         { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
-.mt-est-btn.e-CERRADO.sel     { background: #15803d; color: #fff; border-color: #15803d; }
-.mt-est-btn.e-CANCELADO       { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-.mt-est-btn.e-CANCELADO.sel   { background: #b91c1c; color: #fff; border-color: #b91c1c; }
-.mt-est-btn:not(.active-all):not([class*="sel"]):hover { opacity: .75; }
+.mt-estado-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e3a5f;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.mt-estado-select {
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #0a2540;
+    cursor: pointer;
+    outline: none;
+    min-width: 240px;
+    transition: all 0.2s;
+}
+.mt-estado-select:hover {
+    border-color: #185FA5;
+    background: #f8fafc;
+}
+.mt-estado-select:focus {
+    border-color: #185FA5;
+    box-shadow: 0 0 0 3px #185FA520;
+}
 
 /* Barra búsqueda tickets */
 .mt-tk-search {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
     border-bottom: 1px solid #f0f4fa;
     flex-wrap: wrap;
+    background: #ffffff;
 }
 .mt-tk-input {
-    display: flex; align-items: center; gap: 8px;
-    background: #f8fafd; border: 1px solid #e8eef8;
-    border-radius: 8px; padding: 7px 13px;
-    flex: 1; min-width: 180px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafd;
+    border: 1px solid #e8eef8;
+    border-radius: 10px;
+    padding: 8px 15px;
+    flex: 1;
+    min-width: 200px;
+    transition: all 0.2s;
+}
+.mt-tk-input:focus-within {
+    border-color: #185FA5;
+    box-shadow: 0 0 0 3px #185FA520;
 }
 .mt-tk-input input {
-    border: none; outline: none; font-size: 13px;
-    background: transparent; color: #0a2540; width: 100%;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: transparent;
+    color: #0a2540;
+    width: 100%;
 }
 .mt-tk-date {
-    display: flex; align-items: center; gap: 8px;
-    background: #f8fafd; border: 1px solid #e8eef8;
-    border-radius: 8px; padding: 6px 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafd;
+    border: 1px solid #e8eef8;
+    border-radius: 10px;
+    padding: 7px 15px;
 }
 .mt-tk-date input {
-    border: none; outline: none; font-size: 13px;
-    background: transparent; color: #0a2540; cursor: pointer;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: transparent;
+    color: #0a2540;
+    cursor: pointer;
 }
 .mt-tk-clear {
-    background: transparent; border: 1px solid #e8eef8;
-    border-radius: 8px; padding: 7px 14px;
-    font-size: 12px; color: #94a3b8; cursor: pointer;
-    transition: all .15s;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
 }
-.mt-tk-clear:hover { background: #f1f5f9; color: #64748b; }
+.mt-tk-clear:hover {
+    background: #e2e8f0;
+    color: #475569;
+    transform: translateY(-1px);
+}
 
 /* Tabla */
-.mt-table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
-.mt-table-wrap::-webkit-scrollbar { width: 5px; height: 5px; }
-.mt-table-wrap::-webkit-scrollbar-thumb { background: #c8d8f0; border-radius: 99px; }
+.mt-table-wrap {
+    overflow-x: auto;
+    max-height: 420px;
+    overflow-y: auto;
+}
+.mt-table-wrap::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.mt-table-wrap::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.mt-table-wrap::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
 
 .mt-table {
-    width: 100%; border-collapse: collapse;
-    font-size: 13px; min-width: 540px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 600px;
 }
-.mt-table thead { background: #f4f7fa; position: sticky; top: 0; z-index: 1; }
+.mt-table thead {
+    background: #f8fafc;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
 .mt-table th {
-    padding: 10px 14px; text-align: left;
-    font-size: 11px; font-weight: 600; color: #64748b;
-    border-bottom: 1px solid #dbe4f0;
-    text-transform: uppercase; letter-spacing: .05em;
+    padding: 14px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    border-bottom: 1.5px solid #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-.mt-table td { padding: 10px 14px; border-bottom: 1px solid #f0f4fa; color: #0a2540; }
-.mt-table tr:last-child td { border-bottom: none; }
-.mt-table tr:hover td { background: #f8fafd; }
+.mt-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+.mt-table tr:last-child td {
+    border-bottom: none;
+}
+.mt-table tbody tr:hover td {
+    background: #f8fafc;
+}
 
 .mt-empty-state {
-    padding: 48px 20px; text-align: center; color: #94a3b8; font-size: 13px;
+    padding: 60px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
 }
 .mt-empty-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    background: #f1f5f9; margin: 0 auto 12px;
-    display: flex; align-items: center; justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #f1f5f9;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-/* Placeholder cuando no hay usuario seleccionado */
 .mt-placeholder {
-    padding: 60px 20px; text-align: center; color: #94a3b8;
+    padding: 80px 20px;
+    text-align: center;
+    color: #94a3b8;
 }
 .mt-placeholder-icon {
-    width: 56px; height: 56px; border-radius: 16px;
-    background: #f1f5f9; margin: 0 auto 14px;
-    display: flex; align-items: center; justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-detalle {
-    background: #E6F1FB; color: #185FA5; border: none;
-    border-radius: 6px; padding: 5px 12px;
-    font-size: 12px; font-weight: 500; cursor: pointer; transition: background .15s;
+    background: linear-gradient(135deg, #E6F1FB 0%, #dbeafe 100%);
+    color: #185FA5;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
 }
-.btn-detalle:hover { background: #185FA5; color: #fff; }
+.btn-detalle:hover {
+    background: linear-gradient(135deg, #185FA5 0%, #1a6ed8 100%);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(24,95,165,0.3);
+}
 
 /* Responsive */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .mt-main { margin-left: 0; padding-top: 68px; }
-    .mt-inner { padding: 20px; }
+    .mt-main {
+        margin-left: 0;
+        padding-top: 68px;
+    }
+    .mt-inner {
+        padding: 20px;
+    }
+    .mt-user-card {
+        max-width: calc(50% - 12px);
+    }
 }
 @media (max-width: 768px) {
-    .mt-main  { margin-left: 0 !important; padding-top: 64px; }
-    .mt-inner { padding: 14px; }
-    .mt-user-card { min-width: calc(50% - 5px); }
-    .mt-user-search { min-width: 100%; width: 100%; }
+    .mt-main {
+        margin-left: 0 !important;
+        padding-top: 64px;
+    }
+    .mt-inner {
+        padding: 16px;
+    }
+    .mt-user-card {
+        min-width: 100%;
+        max-width: 100%;
+    }
+    .mt-user-search {
+        min-width: 100%;
+        width: 100%;
+    }
+    .mt-user-selector {
+        width: 100%;
+    }
+    .mt-user-select {
+        min-width: auto;
+        flex: 1;
+    }
+    .mt-estado-select {
+        min-width: 100%;
+    }
 }
 </style>
 
@@ -256,7 +562,9 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
     {{-- Header --}}
     <div class="mt-header">
         <div>
-            <h1>Seguimiento de Tickets</h1>
+            <h1>
+                <span></span> Seguimiento de Tickets
+            </h1>
             <div class="mt-header-sub">Selecciona un usuario para ver sus tickets</div>
         </div>
     </div>
@@ -266,15 +574,39 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
         <div class="mt-panel-header">
             <div class="mt-panel-title">
                 <div class="mt-panel-icon">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
                 </div>
                 Usuarios
                 <span style="background:#185FA515;color:#185FA5;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;">
                     {{ $usuarios->count() }}
                 </span>
             </div>
+            
+            {{-- SELECTOR RÁPIDO DE USUARIOS --}}
+            <div class="mt-user-selector">
+             
+                <select class="mt-user-select" id="quickUserSelect">
+                    <option value=""> Seleccionar usuario rápidamente...</option>
+                    <option value="" disabled style="background:#f0f4f8;">━━━━━━━━━━━━━━━━━━━━</option>
+                    @foreach($usuarios->take(10) as $user)
+                    <option value="{{ $user->id_usuario }}">
+                        👤 {{ $user->nombre }} {{ $user->apellido_paterno }} - {{ $user->codigo_usuario }}
+                    </option>
+                    @endforeach
+                </select>
+                <span class="selector-badge">Rápido</span>
+            </div>
+            
             <div class="mt-user-search">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
                 <input type="text" id="userSearch" placeholder="Buscar por nombre, DNI, código o correo..." oninput="filterUsers()">
             </div>
         </div>
@@ -284,13 +616,13 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
             <div class="mt-user-card"
                  id="ucard-{{ $user->id_usuario }}"
                  data-id="{{ $user->id_usuario }}"
-                 data-nombre="{{ strtolower($user->nombre . ' ' . $user->apellido_paterno . ' ' . $user->apellido_materno) }}"
+                 data-nombre="{{ strtolower($user->nombre . ' ' . $user->apellido_paterno . ' ' . ($user->apellido_materno ?? '')) }}"
                  data-dni="{{ strtolower($user->dni ?? '') }}"
                  data-codigo="{{ strtolower($user->codigo_usuario ?? '') }}"
                  data-correo="{{ strtolower($user->correo ?? '') }}"
-                 data-initial="{{ strtoupper(substr($user->nombre, 0, 1)) }}"
+                 data-inicial="{{ strtoupper(substr($user->nombre, 0, 1)) . strtoupper(substr($user->apellido_paterno, 0, 1)) }}"
                  onclick="selectUser({{ $user->id_usuario }}, '{{ addslashes($user->nombre . ' ' . $user->apellido_paterno) }}', '{{ $user->codigo_usuario }}')">
-                <div class="mt-avatar">{{ strtoupper(substr($user->nombre, 0, 1)) }}</div>
+                <div class="mt-avatar">{{ strtoupper(substr($user->nombre, 0, 1)) . strtoupper(substr($user->apellido_paterno, 0, 1)) }}</div>
                 <div class="mt-user-info">
                     <div class="mt-user-name">{{ $user->nombre }} {{ $user->apellido_paterno }}</div>
                     <div class="mt-user-code">{{ $user->codigo_usuario }}</div>
@@ -320,26 +652,44 @@ body.sb-collapsed .mt-main { margin-left: 70px; }
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;" id="selStats"></div>
         </div>
 
-        {{-- Filtro estados --}}
-        <div class="mt-estado-bar" id="estadoBar">
-            <button class="mt-est-btn active-all" id="ebtn-all" onclick="setEstado('all')">
-                Todos <span id="ecnt-all" style="font-size:10px;opacity:.7;"></span>
-            </button>
-            <button class="mt-est-btn e-PENDIENTE" id="ebtn-PENDIENTE" onclick="setEstado('PENDIENTE')">Pendiente <span id="ecnt-PENDIENTE" style="font-size:10px;opacity:.7;"></span></button>
-            <button class="mt-est-btn e-PROGRAMADO" id="ebtn-PROGRAMADO" onclick="setEstado('PROGRAMADO')">Programado <span id="ecnt-PROGRAMADO" style="font-size:10px;opacity:.7;"></span></button>
-            <button class="mt-est-btn e-EN-PROCESO" id="ebtn-EN-PROCESO" onclick="setEstado('EN PROCESO')">En Proceso <span id="ecnt-EN PROCESO" style="font-size:10px;opacity:.7;"></span></button>
-            <button class="mt-est-btn e-CERRADO" id="ebtn-CERRADO" onclick="setEstado('CERRADO')">Cerrado <span id="ecnt-CERRADO" style="font-size:10px;opacity:.7;"></span></button>
-            <button class="mt-est-btn e-CANCELADO" id="ebtn-CANCELADO" onclick="setEstado('CANCELADO')">Cancelado <span id="ecnt-CANCELADO" style="font-size:10px;opacity:.7;"></span></button>
+        {{-- FILTRO ESTADOS - SELECT --}}
+        <div class="mt-estado-bar">
+            <div class="mt-estado-selector">
+                <label class="mt-estado-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                        <polyline points="2 17 12 22 22 17"/>
+                        <polyline points="2 12 12 17 22 12"/>
+                    </svg>
+                    Filtrar por estado:
+                </label>
+                <select id="estadoSelect" class="mt-estado-select" onchange="setEstado(this.value)">
+                    <option value="all"> Todos los estados</option>
+                    <option value="PENDIENTE"> Pendiente</option>
+                    <option value="PROGRAMADO"> Programado</option>
+                    <option value="EN PROCESO"> En Proceso</option>
+                    <option value="CERRADO"> Cerrado</option>
+                    <option value="CANCELADO"> Cancelado</option>
+                </select>
+            </div>
         </div>
 
         {{-- Barra búsqueda tickets --}}
         <div class="mt-tk-search">
             <div class="mt-tk-input">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
                 <input type="text" id="tkSearch" placeholder="Buscar por código de ticket..." oninput="renderTickets()">
             </div>
             <div class="mt-tk-date">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
                 <input type="date" id="tkDate" onchange="renderTickets()">
             </div>
             <button class="mt-tk-clear" onclick="clearTkFilters()">✕ Limpiar</button>
@@ -373,8 +723,25 @@ const allTickets   = @json($tickets->values());
 const usuarios     = @json($usuarios->values());
 
 let selectedUserId  = null;
-let userTickets     = [];   // tickets del usuario seleccionado
+let userTickets     = [];
 let estadoFiltro    = 'all';
+
+// ── SELECTOR RÁPIDO DE USUARIOS ───────────────────────────────────────────────
+document.getElementById('quickUserSelect')?.addEventListener('change', function(e) {
+    const userId = parseInt(e.target.value);
+    if (!userId) return;
+    
+    const user = usuarios.find(u => u.id_usuario === userId);
+    if (user) {
+        e.target.value = '';
+        selectUser(userId, user.nombre + ' ' + user.apellido_paterno, user.codigo_usuario);
+        
+        const card = document.getElementById('ucard-' + userId);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+});
 
 // ── Filtrar tarjetas de usuarios ─────────────────────────────────────────────
 function filterUsers() {
@@ -396,9 +763,14 @@ function selectUser(id, nombre, codigo) {
     document.getElementById('tkSearch').value = '';
     document.getElementById('tkDate').value   = '';
 
+    // Resetear el select de estados
+    const estadoSelect = document.getElementById('estadoSelect');
+    if (estadoSelect) estadoSelect.value = 'all';
+
     // Marcar card activa
     document.querySelectorAll('.mt-user-card').forEach(c => c.classList.remove('active'));
-    document.getElementById('ucard-' + id)?.classList.add('active');
+    const activeCard = document.getElementById('ucard-' + id);
+    if (activeCard) activeCard.classList.add('active');
 
     // Header tickets
     const inicial = nombre.trim().charAt(0).toUpperCase();
@@ -409,48 +781,28 @@ function selectUser(id, nombre, codigo) {
     // Filtrar tickets de este usuario
     userTickets = allTickets.filter(t => t.usuario_id == id);
 
-    // Contadores por estado
-    const estados = ['PENDIENTE','PROGRAMADO','EN PROCESO','CERRADO','CANCELADO'];
-    document.getElementById('ecnt-all').textContent = '(' + userTickets.length + ')';
-    estados.forEach(e => {
-        const cnt = userTickets.filter(t => t.estado === e).length;
-        const el  = document.getElementById('ecnt-' + e);
-        if (el) el.textContent = cnt > 0 ? '(' + cnt + ')' : '';
-    });
-
     // Stats en header
     const abiertos  = userTickets.filter(t => !['CERRADO','CANCELADO'].includes(t.estado)).length;
     const cerrados  = userTickets.filter(t => t.estado === 'CERRADO').length;
     document.getElementById('selStats').innerHTML = `
         <span style="font-size:12px;background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:20px;">
-            ${userTickets.length} tickets
+             ${userTickets.length} tickets
         </span>
         <span style="font-size:12px;background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:20px;">
-            ${abiertos} activos
+             ${abiertos} activos
         </span>
         <span style="font-size:12px;background:rgba(34,197,94,.2);color:#86efac;padding:4px 12px;border-radius:20px;">
-            ${cerrados} cerrados
+             ${cerrados} cerrados
         </span>`;
-
-    // Reset estado filtro
-    document.querySelectorAll('.mt-est-btn').forEach(b => b.classList.remove('sel','active-all'));
-    document.getElementById('ebtn-all').classList.add('active-all');
 
     renderTickets();
 }
 
-// ── Cambiar filtro estado ─────────────────────────────────────────────────────
+// ── Cambiar filtro estado con SELECT ─────────────────────────────────────────
 function setEstado(e) {
     estadoFiltro = e;
-    document.querySelectorAll('.mt-est-btn').forEach(b => {
-        b.classList.remove('sel','active-all');
-    });
-    if (e === 'all') {
-        document.getElementById('ebtn-all').classList.add('active-all');
-    } else {
-        const btn = document.getElementById('ebtn-' + e);
-        if (btn) btn.classList.add('sel');
-    }
+    const select = document.getElementById('estadoSelect');
+    if (select && select.value !== e) select.value = e;
     renderTickets();
 }
 
@@ -470,14 +822,14 @@ function badge(s) {
         'CERRADO':    'background:#f0fdf4;color:#15803d;',
         'CANCELADO':  'background:#fef2f2;color:#b91c1c;',
     };
-    return `<span style="${map[s]??'background:#f1f5f9;color:#64748b;'}font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;">${s}</span>`;
+    return `<span style="${map[s]??'background:#f1f5f9;color:#64748b;'}font-size:11px;font-weight:600;padding:4px 12px;border-radius:30px;">${s}</span>`;
 }
 
 function priBadge(nombre, color) {
     const c = color || '#1a6ed8';
     return nombre
-        ? `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:${c};">
-               <span style="width:6px;height:6px;border-radius:50%;background:${c};display:inline-block;"></span>${nombre}
+        ? `<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:${c};">
+               <span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block;box-shadow:0 0 0 2px ${c}20;"></span>${nombre}
            </span>`
         : '—';
 }
@@ -491,9 +843,12 @@ function renderTickets() {
             <tr><td colspan="6">
                 <div class="mt-placeholder">
                     <div class="mt-placeholder-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
                     </div>
-                    <div style="font-weight:600;color:#64748b;margin-bottom:4px;">Ningún usuario seleccionado</div>
+                    <div style="font-weight:600;color:#64748b;margin-bottom:6px;">Ningún usuario seleccionado</div>
                     <div style="font-size:12px;">Elige un usuario en el panel de arriba para ver sus tickets</div>
                 </div>
             </td></tr>`;
@@ -513,7 +868,10 @@ function renderTickets() {
             <tr><td colspan="6">
                 <div class="mt-empty-state">
                     <div class="mt-empty-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
                     </div>
                     Sin tickets que mostrar
                 </div>
@@ -521,18 +879,17 @@ function renderTickets() {
         return;
     }
 
-    // Necesitamos los índices globales para openModal()
     tbody.innerHTML = pool.map(t => {
         const globalIdx = allTickets.findIndex(x => x.id_ticket === t.id_ticket);
         return `
         <tr>
-            <td style="font-family:monospace;font-size:12px;color:#185FA5;">${t.codigo_ticket}</td>
-            <td style="color:#0a2540;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.asunto ?? '—'}</td>
+            <td style="font-family:monospace;font-size:12px;font-weight:600;color:#185FA5;">${t.codigo_ticket}</td>
+            <td style="color:#0a2540;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.asunto ?? '—'}</td>
             <td>${badge(t.estado)}</td>
             <td>${priBadge(t.prioridad_nombre, t.prioridad_color)}</td>
             <td style="color:#64748b;font-size:12px;">${(t.created_at ?? '').substring(0,10)}</td>
             <td style="text-align:center;">
-                <button class="btn-detalle" onclick="openModal(${globalIdx})">Ver detalle</button>
+                <button class="btn-detalle" onclick="openModal(${globalIdx})"> Ver detalle</button>
             </td>
         </tr>`;
     }).join('');

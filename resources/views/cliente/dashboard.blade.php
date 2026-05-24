@@ -2,38 +2,48 @@
 @include('components.cliente.nuevousuario')
 @include('components.notificaciones.alertas')
 
-
-
 <div class="main-content">
     <div class="container-fluid">
 
         <!-- HEADER -->
         <div class="page-header">
             <div>
-                <h1 class="page-title">Gestión de Personal</h1>
-                <p class="page-subtitle">{{ $usuarios->count() }} usuarios registrados en total</p>
+                <h1 class="page-title">
+                    <i class="fas fa-user-shield"></i> Gestión de Personal
+                </h1>
+                <p class="page-subtitle">
+                    <i class="fas fa-database"></i> {{ $usuarios->count() }} usuarios registrados en total
+                </p>
             </div>
-            <button class="btn-nuevo" onclick="openModal()">+ Nuevo Usuario</button>
+            <button class="btn-nuevo" onclick="openModal()">
+                <i class="fas fa-plus-circle"></i> Nuevo Usuario
+            </button>
         </div>
 
         <!-- STATS / FILTROS -->
         <div class="stats-container">
             <div class="stat-card active" onclick="filtrarEstado('todos')" id="btn-todos">
-                <div class="stat-icon">👥</div>
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
                 <div class="stat-info">
                     <span class="stat-label">Total</span>
                     <span class="stat-number">{{ $usuarios->count() }}</span>
                 </div>
             </div>
             <div class="stat-card" onclick="filtrarEstado('activo')" id="btn-activos">
-                <div class="stat-icon icon-success">✔️</div>
+                <div class="stat-icon icon-success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
                 <div class="stat-info">
                     <span class="stat-label">Activos</span>
                     <span class="stat-number">{{ $usuarios->where('activo', 1)->count() }}</span>
                 </div>
             </div>
             <div class="stat-card" onclick="filtrarEstado('inactivo')" id="btn-inactivos">
-                <div class="stat-icon icon-danger">❌</div>
+                <div class="stat-icon icon-danger">
+                    <i class="fas fa-ban"></i>
+                </div>
                 <div class="stat-info">
                     <span class="stat-label">Inactivos</span>
                     <span class="stat-number">{{ $usuarios->where('activo', 0)->count() }}</span>
@@ -44,11 +54,13 @@
         <!-- BÚSQUEDA + CONTEO -->
         <div class="search-section">
             <div class="search-box">
-                <span class="search-icon">🔍</span>
+                <i class="fas fa-search search-icon"></i>
                 <input type="text" id="inputBusqueda" onkeyup="buscarUsuario()"
                        placeholder="Buscar por nombre, correo o DNI...">
             </div>
-            <p class="conteo-text" id="conteo-visible">Mostrando 0 de {{ $usuarios->count() }}</p>
+            <p class="conteo-text" id="conteo-visible">
+                <i class="fas fa-eye"></i> Mostrando 0 de {{ $usuarios->count() }}
+            </p>
         </div>
 
         <!-- GRID -->
@@ -56,46 +68,120 @@
             @forelse($usuarios as $user)
             <div class="user-card-wrapper"
                  data-estado="{{ $user->activo ? 'activo' : 'inactivo' }}"
-                data-search="{{ strtolower($user->nombre . ' ' . $user->apellido_paterno . ' ' . $user->dni . ' ' . $user->correo . ' ' . $user->codigo_usuario) }}">
+                 data-id="{{ $user->id_usuario }}"
+                 data-nombre="{{ $user->nombre }}"
+                 data-apellido_paterno="{{ $user->apellido_paterno }}"
+                 data-apellido_materno="{{ $user->apellido_materno ?? '' }}"
+                 data-dni="{{ $user->dni }}"
+                 data-correo="{{ $user->correo }}"
+                 data-codigo="{{ $user->codigo_usuario }}"
+                 data-activo="{{ $user->activo }}"
+                 data-search="{{ strtolower($user->nombre . ' ' . $user->apellido_paterno . ' ' . $user->dni . ' ' . $user->correo . ' ' . $user->codigo_usuario) }}">
                 <div class="user-card {{ $user->activo ? 'card-active' : 'card-inactive' }}">
                     <div class="status-indicator">
-                        <span class="dot"></span>
+                        <i class="fas fa-circle dot"></i>
                         {{ $user->activo ? 'Activo' : 'Inactivo' }}
                     </div>
                     <div class="card-body">
-                        <div class="avatar-circle">{{ strtoupper(substr($user->nombre, 0, 1)) }}</div>
+                        <div class="avatar-circle">
+                            {{ strtoupper(substr($user->nombre, 0, 1)) }}{{ strtoupper(substr($user->apellido_paterno, 0, 1)) }}
+                        </div>
                         <div class="user-info">
                             <h3>{{ $user->nombre }} {{ $user->apellido_paterno }}</h3>
-                            <p class="user-code">Cod: {{ $user->codigo_usuario }}</p>
-                            <div class="detail-row"><span class="label">DNI:</span><span class="value">{{ $user->dni }}</span></div>
-                            <div class="detail-row"><span class="label">Email:</span><span class="value truncate">{{ $user->correo }}</span></div>
+                            <p class="user-code">
+                                <i class="fas fa-id-card"></i> {{ $user->codigo_usuario }}
+                            </p>
+                            <div class="detail-row">
+                                <span class="label"><i class="fas fa-id-card"></i> DNI:</span>
+                                <span class="value">{{ $user->dni }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label"><i class="fas fa-envelope"></i> Email:</span>
+                                <span class="value truncate">{{ $user->correo }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn-view-detail">🔍 Ver Detalles</button>
+                        <button class="btn-view-detail" onclick="verDetalles({{ $loop->index }})">
+                            <i class="fas fa-eye"></i> Ver Detalles
+                        </button>
                         <button class="btn-action-status {{ $user->activo ? 'btn-deactivate' : 'btn-activate' }}"
                                 onclick="toggleActivo({{ $user->id_usuario }}, {{ $user->activo }})">
+                            <i class="fas {{ $user->activo ? 'fa-user-slash' : 'fa-user-check' }}"></i>
                             {{ $user->activo ? 'Desactivar' : 'Activar' }}
                         </button>
                     </div>
                 </div>
             </div>
             @empty
-            <div class="empty-state"><p>No hay usuarios registrados aún.</p></div>
+            <div class="empty-state">
+                <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: 16px;"></i>
+                <p>No hay usuarios registrados aún.</p>
+            </div>
             @endforelse
         </div>
 
         <!-- MOSTRAR MÁS -->
         <div class="load-more-wrapper" id="load-more-wrapper">
             <button class="btn-load-more" id="btn-load-more" onclick="mostrarMas()">
-                Mostrar más <span id="restantes"></span>
+                <i class="fas fa-arrow-down"></i> Mostrar más <span id="restantes"></span>
             </button>
         </div>
 
     </div>
 </div>
 
+<!-- MODAL DE DETALLES MEJORADO -->
+<div id="modal-detalles" class="modal-detalles" style="display: none;">
+    <div class="modal-detalles-content">
+        <div class="modal-detalles-header">
+            <h3><i class="fas fa-user-circle"></i> Detalles del Usuario</h3>
+            <button class="modal-close" onclick="cerrarModalDetalles()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-detalles-body" id="modal-detalles-body">
+            <!-- Contenido dinámico -->
+        </div>
+        <div class="modal-detalles-footer">
+            <button class="btn-cerrar" onclick="cerrarModalDetalles()">
+                <i class="fas fa-times"></i> Cerrar
+            </button>
+        </div>
+    </div>
+</div>
 
+<!-- NOTIFICACIÓN PROFESIONAL -->
+<div id="notificacion-toast" class="toast-notification" style="display: none;">
+    <div class="toast-icon" id="toast-icon">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="toast-content">
+        <strong id="toast-title">Éxito</strong>
+        <p id="toast-message">Operación realizada</p>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN PROFESIONAL -->
+<div id="modal-confirmacion" class="modal-confirmacion" style="display: none;">
+    <div class="modal-confirmacion-content">
+        <div class="modal-confirmacion-header" id="confirm-icon">
+            <i class="fas fa-question-circle"></i>
+        </div>
+        <div class="modal-confirmacion-body">
+            <h3 id="confirm-titulo">Confirmar acción</h3>
+            <p id="confirm-mensaje">¿Estás seguro de realizar esta acción?</p>
+        </div>
+        <div class="modal-confirmacion-footer">
+            <button class="btn-cancelar" onclick="cerrarModalConfirmacion()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button class="btn-confirmar" id="btn-confirmar-accion">
+                <i class="fas fa-check"></i> Confirmar
+            </button>
+        </div>
+    </div>
+</div>
 
 <style>
     .main-content {
@@ -112,163 +198,317 @@
     /* Header */
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
     .page-title  { font-size: 24px; font-weight: 700; color: #1a202c; margin: 0; }
+    .page-title i { color: #2b6cb0; margin-right: 10px; }
     .page-subtitle { font-size: 14px; color: #718096; margin: 4px 0 0; }
-    .btn-nuevo { background: #13294b; color: white; padding: 12px 22px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
-    .btn-nuevo:hover { background: #1a3a6b; }
+    .page-subtitle i { margin-right: 6px; }
+    .btn-nuevo { background: #13294b; color: white; padding: 12px 22px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; transition: all 0.3s; }
+    .btn-nuevo i { margin-right: 8px; }
+    .btn-nuevo:hover { background: #1a3a6b; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(19,41,75,0.2); }
 
     /* Stats */
     .stats-container { display: flex; gap: 20px; margin-bottom: 28px; }
-    .stat-card { background: white; flex: 1; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: .2s; border: 2px solid transparent; }
+    .stat-card { background: white; flex: 1; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
     .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
-    .stat-card.active { border-color: #2b6cb0; background: #ebf8ff; }
+    .stat-card.active { border-color: #2b6cb0; background: linear-gradient(135deg, #ebf8ff 0%, #ffffff 100%); }
     .stat-icon { width: 45px; height: 45px; background: #edf2f7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .icon-success { background: #e6fffa; }
-    .icon-danger  { background: #fff5f5; }
+    .stat-icon i { font-size: 22px; color: #4a5568; }
+    .icon-success { background: linear-gradient(135deg, #e6fffa 0%, #ffffff 100%); }
+    .icon-success i { color: #38a169; }
+    .icon-danger { background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%); }
+    .icon-danger i { color: #e53e3e; }
     .stat-label  { display: block; font-size: 13px; color: #718096; font-weight: 500; }
     .stat-number { font-size: 24px; font-weight: 700; color: #2d3748; }
 
     /* Búsqueda */
     .search-section { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
-    .search-box { background: white; display: flex; align-items: center; padding: 12px 20px; border-radius: 12px; border: 1px solid #e2e8f0; flex: 1; }
-    .search-icon { margin-right: 12px; color: #a0aec0; }
+    .search-box { background: white; display: flex; align-items: center; padding: 12px 20px; border-radius: 12px; border: 1px solid #e2e8f0; flex: 1; transition: all 0.3s; }
+    .search-box:focus-within { border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43,108,176,0.1); }
+    .search-icon { margin-right: 12px; color: #a0aec0; font-size: 16px; }
     .search-box input { border: none; width: 100%; outline: none; font-size: 15px; color: #4a5568; }
+    .search-box input::placeholder { color: #cbd5e0; }
     .conteo-text { font-size: 13px; color: #718096; white-space: nowrap; }
+    .conteo-text i { margin-right: 6px; }
 
     /* Grid */
-    .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px; }
+    .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-bottom: 30px; }
     .user-card-wrapper { display: none; }
     .user-card-wrapper.visible { display: block; }
     .user-card-wrapper.filtro-hidden { display: none !important; }
 
-    .user-card { background: white; border-radius: 15px; border: 1px solid #e2e8f0; position: relative; overflow: hidden; transition: box-shadow .2s; }
-    .user-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.07); }
+    .user-card { background: white; border-radius: 15px; border: 1px solid #e2e8f0; position: relative; overflow: hidden; transition: all 0.3s; }
+    .user-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
     .card-body { padding: 30px 20px 20px; text-align: center; }
-    .avatar-circle { width: 60px; height: 60px; background: #ebf4ff; color: #2b6cb0; font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 15px; }
+    .avatar-circle { width: 70px; height: 70px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 26px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .status-indicator { position: absolute; top: 14px; right: 14px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; }
+    .status-indicator i { font-size: 8px; }
     .card-active  .status-indicator { background: #ebfbee; color: #2f855a; }
     .card-inactive .status-indicator { background: #fff5f5; color: #c53030; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; }
-    .card-active  .dot { background: #48bb78; }
-    .card-inactive .dot { background: #f56565; }
-    .user-info h3 { font-size: 15px; font-weight: 600; color: #2d3748; margin: 0 0 4px; }
-    .user-code { font-size: 12px; color: #a0aec0; background: #f7fafc; display: inline-block; padding: 2px 10px; border-radius: 20px; margin-bottom: 12px; }
-    .detail-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid #f7fafc; }
+    .user-info h3 { font-size: 16px; font-weight: 600; color: #2d3748; margin: 0 0 4px; }
+    .user-code { font-size: 12px; color: #a0aec0; background: #f7fafc; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
+    .user-code i { margin-right: 4px; }
+    .detail-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #f7fafc; }
     .detail-row .label { color: #a0aec0; font-weight: 500; }
+    .detail-row .label i { margin-right: 6px; width: 16px; }
     .detail-row .value { color: #4a5568; }
     .truncate { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .card-footer { display: grid; grid-template-columns: 1fr 1fr; background: #f7fafc; border-top: 1px solid #edf2f7; }
-    .btn-view-detail, .btn-action-status { padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .btn-view-detail, .btn-action-status { padding: 12px; border: none; background: transparent; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s; }
     .btn-view-detail { color: #3182ce; border-right: 1px solid #edf2f7; }
+    .btn-view-detail:hover { background: #ebf8ff; }
     .btn-deactivate { color: #e53e3e; }
+    .btn-deactivate:hover { background: #fff5f5; }
     .btn-activate   { color: #38a169; }
+    .btn-activate:hover { background: #ebfbee; }
     .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #a0aec0; }
 
-    /* Mostrar más */
+    /* Modal de detalles profesional */
+    .modal-detalles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .modal-detalles-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        animation: slideUp 0.3s ease;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-detalles-header {
+        background: linear-gradient(135deg, #13294b 0%, #1a3a6b 100%);
+        color: white;
+        padding: 20px 24px;
+        border-radius: 20px 20px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-detalles-header h3 {
+        margin: 0;
+        font-size: 20px;
+    }
+    .modal-detalles-header h3 i {
+        margin-right: 10px;
+    }
+    .modal-close {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .modal-close:hover {
+        background: rgba(255,255,255,0.4);
+        transform: rotate(90deg);
+    }
+    .modal-detalles-body {
+        padding: 24px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .detalle-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf2f7;
+    }
+    .detalle-icon {
+        width: 40px;
+        height: 40px;
+        background: #ebf4ff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+    .detalle-icon i {
+        font-size: 18px;
+        color: #2b6cb0;
+    }
+    .detalle-info {
+        flex: 1;
+    }
+    .detalle-label {
+        font-size: 12px;
+        color: #a0aec0;
+        display: block;
+    }
+    .detalle-valor {
+        font-size: 15px;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    .modal-detalles-footer {
+        padding: 16px 24px;
+        border-top: 1px solid #edf2f7;
+        text-align: right;
+    }
+    .btn-cerrar {
+        background: #edf2f7;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-cerrar:hover {
+        background: #e2e8f0;
+    }
+
+    /* Toast notification profesional */
+    .toast-notification {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: white;
+        border-radius: 12px;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1100;
+        animation: slideInRight 0.3s ease;
+        border-left: 4px solid;
+    }
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    .toast-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+    .toast-icon.success { background: #ebfbee; color: #38a169; }
+    .toast-icon.error { background: #fff5f5; color: #e53e3e; }
+    .toast-content strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    .toast-content p {
+        font-size: 12px;
+        margin: 0;
+        color: #718096;
+    }
+
+    /* Modal de confirmación profesional */
+    .modal-confirmacion {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-confirmacion-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        animation: slideUp 0.3s ease;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .modal-confirmacion-header {
+        padding: 30px 0 0 0;
+    }
+    .modal-confirmacion-header i {
+        font-size: 64px;
+    }
+    .modal-confirmacion-header.warning i { color: #ed8936; }
+    .modal-confirmacion-header.success i { color: #38a169; }
+    .modal-confirmacion-body {
+        padding: 20px 30px;
+    }
+    .modal-confirmacion-body h3 {
+        margin: 0 0 10px 0;
+        color: #2d3748;
+    }
+    .modal-confirmacion-body p {
+        margin: 0;
+        color: #718096;
+    }
+    .modal-confirmacion-footer {
+        padding: 20px 30px;
+        display: flex;
+        gap: 12px;
+        border-top: 1px solid #edf2f7;
+    }
+    .btn-cancelar, .btn-confirmar {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .btn-cancelar {
+        background: #edf2f7;
+        color: #4a5568;
+    }
+    .btn-cancelar:hover {
+        background: #e2e8f0;
+    }
+    .btn-confirmar {
+        background: #e53e3e;
+        color: white;
+    }
+    .btn-confirmar:hover {
+        background: #c53030;
+        transform: translateY(-2px);
+    }
+
     .load-more-wrapper { display: flex; justify-content: center; padding: 10px 0 40px; }
     .btn-load-more { background: white; color: #13294b; border: 2px solid #13294b; padding: 12px 36px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; }
-    .btn-load-more:hover { background: #13294b; color: white; }
+    .btn-load-more i { margin-right: 8px; }
+    .btn-load-more:hover { background: #13294b; color: white; transform: translateY(-2px); }
 
-    /* ═══════════════════════════════
-       TABLET (769px – 1024px)
-       Sidebar es drawer → margin 0
-    ═══════════════════════════════ */
-    /* ═══════════════════════════════
-       TABLET (769px – 1024px)
-    ═══════════════════════════════ */
+    /* Responsive */
     @media (min-width: 769px) and (max-width: 1024px) {
-        .main-content {
-            margin-left: 0 !important;
-            padding: 24px 20px;
-            padding-top: 68px;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
-        body.sb-collapsed .main-content { margin-left: 0 !important; }
-
-        .stats-container { gap: 12px; }
-        .stat-card { padding: 14px; }
-        .stat-number { font-size: 20px; }
-
-        .user-grid {
-            grid-template-columns: repeat(2, 1fr); /* exactamente 2 columnas, sin minmax fijo */
-            gap: 16px;
-        }
+        .main-content { margin-left: 0 !important; padding: 24px 20px; padding-top: 68px; }
+        .user-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
     }
-
-    /* ═══════════════════════════════
-       MÓVIL (≤ 768px)
-    ═══════════════════════════════ */
     @media (max-width: 768px) {
-        .main-content {
-            margin-left: 0 !important;
-            padding: 16px;
-            padding-top: 68px;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: hidden;   /* ← esto corta el scroll horizontal */
-        }
-        body.sb-collapsed .main-content { margin-left: 0 !important; }
-
-        /* evita que hijos se salgan */
-        .container-fluid { width: 100%; box-sizing: border-box; }
-
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .btn-nuevo { width: 100%; text-align: center; box-sizing: border-box; }
-
-        .stats-container {
-            flex-direction: row;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .stat-card { padding: 10px 8px; gap: 8px; min-width: 0; } /* min-width:0 evita overflow en flex */
-        .stat-icon { width: 32px; height: 32px; font-size: 14px; border-radius: 8px; flex-shrink: 0; }
-        .stat-label { font-size: 10px; }
-        .stat-number { font-size: 17px; }
-
-        .search-section {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .search-box { box-sizing: border-box; width: 100%; }
-        .conteo-text { text-align: right; }
-
-        /* ← el cambio más importante: 1fr en vez de minmax(300px,1fr) */
-        .user-grid {
-            grid-template-columns: 1fr;
-            gap: 14px;
-        }
-
-        /* la tarjeta no puede ser más ancha que su contenedor */
-        .user-card-wrapper,
-        .user-card { width: 100%; box-sizing: border-box; }
-
-        .truncate { max-width: 100%; }
-    }
-
-    /* ═══════════════════════════════
-       MÓVIL PEQUEÑO (≤ 480px)
-    ═══════════════════════════════ */
-    @media (max-width: 480px) {
-        .main-content { padding: 12px; padding-top: 68px; box-sizing: border-box; }
-
-        .stats-container { flex-direction: column; }
-        .stat-card { padding: 12px; min-width: 0; }
-
-        .user-grid { grid-template-columns: 1fr; gap: 12px; }
-
-        .card-body { padding: 22px 14px 14px; }
-        .avatar-circle { width: 48px; height: 48px; font-size: 20px; }
-        .user-info h3 { font-size: 14px; }
-        .detail-row { font-size: 12px; }
-        .btn-view-detail, .btn-action-status { padding: 10px; font-size: 12px; }
+        .main-content { margin-left: 0 !important; padding: 16px; padding-top: 68px; }
+        .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .btn-nuevo { width: 100%; text-align: center; }
+        .stats-container { flex-direction: row; gap: 8px; }
+        .user-grid { grid-template-columns: 1fr; gap: 14px; }
     }
 </style>
 
@@ -276,8 +516,9 @@
     const LOTE = 16;
     let mostrados = 0;
     let filtroActual = 'todos';
+    let usuariosData = @json($usuarios);
+    let confirmCallback = null;
 
-    // Devuelve todas las cards que pasan el filtro activo y la búsqueda
     function cardsVisibles() {
         const q = document.getElementById('inputBusqueda').value.toLowerCase();
         return Array.from(document.querySelectorAll('.user-card-wrapper')).filter(card => {
@@ -290,31 +531,21 @@
     function actualizarVista() {
         const cards = cardsVisibles();
         const total = cards.length;
-
-        // Ocultar todas primero
         document.querySelectorAll('.user-card-wrapper').forEach(c => {
             c.classList.remove('visible');
             c.classList.add('filtro-hidden');
         });
-
-        // Mostrar solo las que pasan filtro, hasta el límite actual
         cards.forEach((card, i) => {
             card.classList.remove('filtro-hidden');
             if (i < mostrados) card.classList.add('visible');
         });
-
-        // Conteo
         const mostrando = Math.min(mostrados, total);
-        document.getElementById('conteo-visible').textContent =
-            `Mostrando ${mostrando} de ${total}`;
-
-        // Botón mostrar más
+        document.getElementById('conteo-visible').innerHTML = '<i class="fas fa-eye"></i> Mostrando ' + mostrando + ' de ' + total;
         const wrapper = document.getElementById('load-more-wrapper');
-        const btn     = document.getElementById('btn-load-more');
         if (mostrados < total) {
             wrapper.style.display = 'flex';
             const quedan = Math.min(LOTE, total - mostrados);
-            btn.innerHTML = `Mostrar más <span style="background:#ebf4ff;color:#2b6cb0;padding:2px 10px;border-radius:20px;font-size:12px;margin-left:8px;">+${quedan}</span>`;
+            document.getElementById('btn-load-more').innerHTML = '<i class="fas fa-arrow-down"></i> Mostrar más <span style="background:#ebf4ff;color:#2b6cb0;padding:2px 10px;border-radius:20px;font-size:12px;margin-left:8px;">+' + quedan + '</span>';
         } else {
             wrapper.style.display = 'none';
         }
@@ -327,7 +558,7 @@
 
     function filtrarEstado(estado) {
         filtroActual = estado;
-        mostrados = LOTE; // reinicia al cambiar filtro
+        mostrados = LOTE;
         document.querySelectorAll('.stat-card').forEach(b => b.classList.remove('active'));
         const mapa = { todos: 'btn-todos', activo: 'btn-activos', inactivo: 'btn-inactivos' };
         document.getElementById(mapa[estado]).classList.add('active');
@@ -335,60 +566,174 @@
     }
 
     function buscarUsuario() {
-        mostrados = LOTE; // reinicia al buscar
+        mostrados = LOTE;
         actualizarVista();
     }
 
-    // Modal
-    function openModal()     { document.getElementById('modal-backdrop').style.display = 'flex'; }
-    function closeModalBtn() { document.getElementById('modal-backdrop').style.display = 'none'; }
-    function closeModal(e)   { if (e.target.id === 'modal-backdrop') closeModalBtn(); }
-
-    // Código automático
-    function limpiar(str) {
-        return str.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z]/g,'');
+    // Ver detalles con modal profesional
+    function verDetalles(index) {
+        const user = usuariosData[index];
+        const modalBody = document.getElementById('modal-detalles-body');
+        modalBody.innerHTML = `
+            <div class="detalle-item">
+                <div class="detalle-icon"><i class="fas fa-user"></i></div>
+                <div class="detalle-info">
+                    <span class="detalle-label">Nombre completo</span>
+                    <span class="detalle-valor">${user.nombre} ${user.apellido_paterno} ${user.apellido_materno || ''}</span>
+                </div>
+            </div>
+            <div class="detalle-item">
+                <div class="detalle-icon"><i class="fas fa-id-card"></i></div>
+                <div class="detalle-info">
+                    <span class="detalle-label">Código de usuario</span>
+                    <span class="detalle-valor">${user.codigo_usuario}</span>
+                </div>
+            </div>
+            <div class="detalle-item">
+                <div class="detalle-icon"><i class="fas fa-credit-card"></i></div>
+                <div class="detalle-info">
+                    <span class="detalle-label">DNI</span>
+                    <span class="detalle-valor">${user.dni}</span>
+                </div>
+            </div>
+            <div class="detalle-item">
+                <div class="detalle-icon"><i class="fas fa-envelope"></i></div>
+                <div class="detalle-info">
+                    <span class="detalle-label">Correo electrónico</span>
+                    <span class="detalle-valor">${user.correo}</span>
+                </div>
+            </div>
+            <div class="detalle-item">
+                <div class="detalle-icon"><i class="fas ${user.activo ? 'fa-check-circle' : 'fa-ban'}"></i></div>
+                <div class="detalle-info">
+                    <span class="detalle-label">Estado</span>
+                    <span class="detalle-valor" style="color: ${user.activo ? '#38a169' : '#e53e3e'}">
+                        ${user.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                </div>
+            </div>
+        `;
+        document.getElementById('modal-detalles').style.display = 'flex';
     }
-    function generarCodigo() {
-        const n = limpiar(document.getElementById('inp-nombre').value).charAt(0).toUpperCase();
-        const p = limpiar(document.getElementById('inp-pat').value).charAt(0).toUpperCase();
-        const m = limpiar(document.getElementById('inp-mat').value).charAt(0).toUpperCase();
-        const d = document.getElementById('inp-dni').value.substring(0, 3);
-        const codigo = (n && p && m && d.length === 3) ? n + p + m + d : '';
-        document.getElementById('codigo-display').textContent = codigo || '———';
-        document.getElementById('codigo-hidden').value = codigo;
+
+    function cerrarModalDetalles() {
+        document.getElementById('modal-detalles').style.display = 'none';
+    }
+
+    // Modal de confirmación profesional
+    function mostrarModalConfirmacion(options) {
+        const modal = document.getElementById('modal-confirmacion');
+        const iconContainer = document.getElementById('confirm-icon');
+        const titulo = document.getElementById('confirm-titulo');
+        const mensaje = document.getElementById('confirm-mensaje');
+        const confirmBtn = document.getElementById('btn-confirmar-accion');
+        
+        iconContainer.className = 'modal-confirmacion-header';
+        if (options.icono === 'warning') {
+            iconContainer.classList.add('warning');
+            iconContainer.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+        } else {
+            iconContainer.classList.add('success');
+            iconContainer.innerHTML = '<i class="fas fa-check-circle"></i>';
+        }
+        
+        titulo.textContent = options.titulo;
+        mensaje.textContent = options.mensaje;
+        confirmCallback = options.onConfirm;
+        
+        modal.style.display = 'flex';
+        
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        newConfirmBtn.addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            cerrarModalConfirmacion();
+        });
+    }
+
+    function cerrarModalConfirmacion() {
+        document.getElementById('modal-confirmacion').style.display = 'none';
+        confirmCallback = null;
+    }
+
+    // Notificación profesional
+    function showNotification(type, title, message) {
+        const toast = document.getElementById('notificacion-toast');
+        const icon = document.getElementById('toast-icon');
+        const titleEl = document.getElementById('toast-title');
+        const messageEl = document.getElementById('toast-message');
+        
+        if (type === 'success') {
+            icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            icon.className = 'toast-icon success';
+            toast.style.borderLeftColor = '#38a169';
+        } else {
+            icon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            icon.className = 'toast-icon error';
+            toast.style.borderLeftColor = '#e53e3e';
+        }
+        
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        toast.style.display = 'flex';
+        
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
     }
 
     function toggleActivo(id, activo) {
-        if (!confirm(activo ? '¿Desactivar este usuario?' : '¿Activar este usuario?')) return;
-
-        fetch(`/cliente/usuarios/${id}/toggle`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
+        mostrarModalConfirmacion({
+            titulo: activo ? 'Desactivar usuario' : 'Activar usuario',
+            mensaje: activo ? '¿Estás seguro de que deseas desactivar este usuario?' : '¿Estás seguro de que deseas activar este usuario?',
+            icono: 'warning',
+            onConfirm: () => {
+                fetch('/cliente/usuarios/' + id + '/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showNotification('success', 'Éxito', activo ? 'Usuario desactivado correctamente' : 'Usuario activado correctamente');
+                    setTimeout(() => location.reload(), 1500);
+                })
+                .catch(error => {
+                    showNotification('error', 'Error', 'Ocurrió un error al procesar la solicitud');
+                });
             }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la petición');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Cambiar estado sin recargar
-            location.reload(); // (opcional, luego lo mejoras)
-        })
-        .catch(error => {
-            console.error(error);
-
-            showNotification(
-                'danger',
-                'Error',
-                'Ocurrió un error'
-            );
         });
     }
-    // Arranque
+
+    // openModal para nuevo usuario (debe venir del include nuevousuario)
+    function openModal() {
+        // Esta función está definida en el componente 'nuevousuario'
+        // Si no existe, la definimos aquí
+        if (typeof window.openModalOriginal === 'function') {
+            window.openModalOriginal();
+        } else {
+            // Intentar llamar al modal del componente
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.style.display = 'flex';
+            } else {
+                console.error('Modal no encontrado');
+                alert('Función openModal no disponible');
+            }
+        }
+    }
+
+    // Cerrar modal con click fuera
+    document.getElementById('modal-detalles')?.addEventListener('click', function(e) {
+        if (e.target === this) cerrarModalDetalles();
+    });
+    
+    document.getElementById('modal-confirmacion')?.addEventListener('click', function(e) {
+        if (e.target === this) cerrarModalConfirmacion();
+    });
+
     mostrados = LOTE;
     actualizarVista();
 </script>

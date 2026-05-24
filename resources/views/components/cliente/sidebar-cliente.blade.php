@@ -538,12 +538,7 @@
   <nav class="sb-nav">
     <div class="sb-label">Menú principal</div>
 
-    <a href="{{ route('cliente.datos') }}"
-       class="sb-nav-item {{ Route::is('cliente.datos') ? 'active' : '' }}">
-      <span class="sb-nav-icon"><i class="fa-solid fa-user"></i></span>
-      <span class="sb-nav-text">Mis Datos</span>
-      <span class="sb-tooltip">Mis Datos</span>
-    </a>
+    
 
     <a href="{{ route('cliente.dashboard') }}"
        class="sb-nav-item {{ Route::is('cliente.dashboard') ? 'active' : '' }}">
@@ -567,6 +562,13 @@
       <span class="sb-nav-icon"><i class="fa-solid fa-envelope"></i></span>
       <span class="sb-nav-text">Contactos</span>
       <span class="sb-tooltip">Contactos</span>
+    </a>
+
+    <a href="{{ route('cliente.datos') }}"
+       class="sb-nav-item {{ Route::is('cliente.datos') ? 'active' : '' }}">
+      <span class="sb-nav-icon"><i class="fa-solid fa-user"></i></span>
+      <span class="sb-nav-text">Mis Datos</span>
+      <span class="sb-tooltip">Mis Datos</span>
     </a>
 
   </nav>
