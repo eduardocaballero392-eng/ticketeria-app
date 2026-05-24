@@ -799,57 +799,64 @@ async function tecSubirReporte() {
 
 // ── Cerrar ticket ────────────────────────────────────────────────
 async function tecCerrarTicket() {
-    if (!window._tecTieneReporte) {
-        document.getElementById('tec-cierre-aviso').style.display = 'block';
-        tecNotif('warning', 'Falta reporte', 'Debes subir el reporte técnico para cerrar el ticket.');
-        return;
-    }
-
-    if (!confirm('¿Cerrar este ticket como RESUELTO?')) return;
-
-    const id = window._tecTicketId;
-    try {
-        const res  = await fetch(`/admin/ticket/${id}/cerrar`, {
-            method:  'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+    ModalSystem.show('question', {
+        title: '¿Cerrar ticket?',
+        text: '¿Estás seguro de marcar este ticket como RESUELTO? Esta acción no se puede deshacer.',
+        confirmText: 'Sí, cerrar',
+        cancelText: 'No, mantener',
+        onConfirm: async () => {
+            const id = window._tecTicketId;
+            try {
+                const res = await fetch(`/admin/ticket/${id}/cerrar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+                    }
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    showNotification('success', '¡Cerrado!', 'El ticket ha sido marcado como CERRADO.');
+                    setTimeout(() => { tecCloseModal(); location.reload(); }, 1200);
+                } else {
+                    showNotification('danger', 'Error', data.message || 'No se pudo cerrar.');
+                }
+            } catch(e) {
+                showNotification('danger', 'Error de conexión', e.message);
             }
-        });
-        const data = await res.json();
-        if (data.ok) {
-            tecNotif('success', '¡Cerrado!', 'El ticket ha sido marcado como CERRADO.');
-            setTimeout(() => { tecCloseModal(); location.reload(); }, 1200);
-        } else {
-            tecNotif('danger', 'Error', data.message || 'No se pudo cerrar.');
         }
-    } catch(e) {
-        tecNotif('danger', 'Error', e.message);
-    }
+    });
 }
 
 // ── Cancelar ticket ──────────────────────────────────────────────
 function tecCancelarTicket() {
-    if (!confirm('¿Cancelar este ticket? Esta acción cambiará el estado a CANCELADO.')) return;
-
-    const id = window._tecTicketId;
-    fetch(`/admin/ticket/${id}/cancelar`, {
-        method:  'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+    ModalSystem.show('confirm', {
+        title: '¿Cancelar ticket?',
+        text: 'Esta acción cambiará el estado a CANCELADO y no se puede revertir.',
+        confirmText: 'Sí, cancelar',
+        cancelText: 'No, mantener',
+        onConfirm: async () => {
+            const id = window._tecTicketId;
+            try {
+                const res = await fetch(`/admin/ticket/${id}/cancelar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+                    }
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    showNotification('success', '¡Cancelado!', 'El ticket fue cancelado correctamente.');
+                    setTimeout(() => { tecCloseModal(); location.reload(); }, 1200);
+                } else {
+                    showNotification('danger', 'Error', data.message || 'No se pudo cancelar.');
+                }
+            } catch(e) {
+                showNotification('danger', 'Error de conexión', e.message);
+            }
         }
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.ok) {
-            tecNotif('success', '¡Cancelado!', 'El ticket fue cancelado correctamente.');
-            setTimeout(() => { tecCloseModal(); location.reload(); }, 1200);
-        } else {
-            tecNotif('danger', 'Error', data.message || 'No se pudo cancelar.');
-        }
-    })
-    .catch(e => tecNotif('danger', 'Error', e.message));
+    });
 }
 
 // ── Helpers UI ───────────────────────────────────────────────────
