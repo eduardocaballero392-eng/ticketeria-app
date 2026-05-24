@@ -429,28 +429,38 @@ class AdminController extends Controller
     public function update(Request $request)
     {
         $tecnico = Tecnico::find(session('id'));
+        if (!$tecnico) {
+            return back()->with('error', 'No se encontró la sesión del administrador.');
+        }
 
-        $request->validate([
-            'nombre'             => 'required|string|max:100',
-            'apellido_paterno'   => 'required|string|max:100',
-            'apellido_materno'   => 'nullable|string|max:100',
+        // ✅ Validación estricta: SOLO letras, espacios, guiones y apóstrofes
+        $validator = Validator::make($request->all(), [
+            'nombre'             => ['required', 'string', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\'-]+$/'],
+            'apellido_paterno'   => ['required', 'string', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\'-]+$/'],
+            'apellido_materno'   => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\'-]+$/'],
             'correo'             => 'required|email|max:100',
+        ], [
+            'nombre.regex'                => 'El nombre solo debe contener letras y espacios.',
+            'apellido_paterno.regex'      => 'El apellido paterno solo debe contener letras y espacios.',
+            'apellido_materno.regex'      => 'El apellido materno solo debe contener letras y espacios.',
+            'nombre.max'                  => 'El nombre no puede superar los 100 caracteres.',
+            'apellido_paterno.max'        => 'El apellido paterno no puede superar los 100 caracteres.',
+            'apellido_materno.max'        => 'El apellido materno no puede superar los 100 caracteres.',
         ]);
 
-        $tecnico->nombre = ucfirst(strtolower($request->nombre));
+        // ✅ Si falla: NO usamos ->withInput() para que el formulario NO guarde los datos inválidos
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
 
-        $tecnico->apellido_paterno =
-            ucfirst(strtolower($request->apellido_paterno));
-
-        $tecnico->apellido_materno =
-            ucfirst(strtolower($request->apellido_materno));
-
-        $tecnico->correo = $request->correo;
-
+        // ✅ Si pasa: actualizamos y guardamos
+        $tecnico->nombre           = ucfirst(strtolower($request->nombre));
+        $tecnico->apellido_paterno = ucfirst(strtolower($request->apellido_paterno));
+        $tecnico->apellido_materno = ucfirst(strtolower($request->apellido_materno ?? ''));
+        $tecnico->correo           = strtolower($request->correo);
+        
         $tecnico->save();
-
         session(['nombre' => $tecnico->nombre]);
-        session(['correo' => $tecnico->correo]);
 
         return back()->with('success', 'Datos actualizados correctamente.');
     }

@@ -12,30 +12,59 @@
 
             <div class="profile-container">
 
-                <form class="glass-form" method="POST" action="{{ route('admin.update') }}">
+                <form class="glass-form" id="perfil-form" method="POST" action="{{ route('admin.update') }}">
                     @csrf
 
-                    @if($errors->any())
-                        <div class="alert-error">
-                            <ul>
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    @if(session('success'))
+                    {{-- Notificación de ÉXITO --}}
+                        @if(session('success'))
                         <script>
-                            window.addEventListener('load', () => {
-                                ModalSystem.show('success', {
-                                    title: '¡Perfil actualizado!',
-                                    text: 'Los datos del administrador se actualizaron correctamente.',
-                                    confirmText: 'Entendido'
-                                });
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const successMsg = {!! json_encode(session('success'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+                                
+                                function mostrarExito() {
+                                    if (typeof ModalSystem !== 'undefined' && ModalSystem.show) {
+                                        ModalSystem.show('success', {
+                                            title: '¡Perfil actualizado!',
+                                            text: successMsg,
+                                            confirmText: 'Entendido'
+                                        });
+                                    } else {
+                                        alert('Éxito: ' + successMsg);
+                                    }
+                                }
+                                
+                                // Si las funciones ya están listas, mostrar ahora; si no, esperar un poco
+                                if (typeof ModalSystem !== 'undefined' || typeof showNotification !== 'undefined') {
+                                    mostrarExito();
+                                } else {
+                                    window.addEventListener('load', mostrarExito);
+                                }
                             });
                         </script>
-                    @endif
+                        @endif
+
+                        {{-- Notificación de ERROR --}}
+                        @if(session('error'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const errorMsg = {!! json_encode(session('error'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+                                
+                                function mostrarError() {
+                                    if (typeof showNotification === 'function') {
+                                        showNotification('danger', 'Error de validación', errorMsg);
+                                    } else {
+                                        alert('Error: ' + errorMsg);
+                                    }
+                                }
+                                
+                                if (typeof showNotification === 'function') {
+                                    mostrarError();
+                                } else {
+                                    window.addEventListener('load', mostrarError);
+                                }
+                            });
+                        </script>
+                        @endif
 
                     <div class="section-label">
                         <div class="section-icon">
@@ -132,7 +161,7 @@
                                 Cancelar
                             </a>
 
-                            <button type="submit" class="btn-save">
+                            <button type="submit" class="btn-save" id="btn-guardar" disabled>
 
                                 <svg viewBox="0 0 20 20">
                                     <path d="M15.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4L7 12.6l8.3-8.3a1 1 0 011.4 0z"/>
@@ -418,3 +447,38 @@ body.sb-collapsed .main-content {
 }
 
 </style>
+
+<script>
+    (function () {
+        const form    = document.getElementById('perfil-form');
+        const btnSave = document.getElementById('btn-guardar');
+        if (!form || !btnSave) return;
+
+        // 1. Guardar valores originales al cargar
+        const originales = {};
+        form.querySelectorAll('input:not([readonly])').forEach(input => {
+            originales[input.name] = input.value;
+        });
+
+        // 2. Función que verifica cambios
+        function verificarCambios() {
+            const hayCambio = Array.from(form.querySelectorAll('input:not([readonly])')).some(input => {
+                return input.value !== originales[input.name];
+            });
+
+            // Activar/desactivar botón
+            btnSave.disabled = !hayCambio;
+            btnSave.style.opacity      = hayCambio ? '1'   : '0.45';
+            btnSave.style.cursor       = hayCambio ? 'pointer' : 'not-allowed';
+            btnSave.style.pointerEvents = hayCambio ? 'auto' : 'none';
+        }
+
+        // 3. Escuchar cambios en tiempo real
+        form.querySelectorAll('input:not([readonly])').forEach(input => {
+            input.addEventListener('input', verificarCambios);
+        });
+
+        // 4. Aplicar estado inicial
+        verificarCambios();
+    })();
+    </script>   
