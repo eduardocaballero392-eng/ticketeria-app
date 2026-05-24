@@ -277,10 +277,11 @@
     background: #fff;
     border-radius: 20px;
     width: 680px; max-width: 100%; max-height: 93vh;
-    overflow-y: auto;
+    display: flex;         
+    flex-direction: column; 
+    overflow: hidden;  
     animation: tecUp .25s cubic-bezier(.16,1,.3,1);
     box-shadow: 0 32px 80px rgba(8,20,45,.28), 0 0 0 1px rgba(255,255,255,.08);
-    scrollbar-width: thin; scrollbar-color: #c8d8f0 transparent;
 }
 .tec-card::-webkit-scrollbar { width: 4px; }
 .tec-card::-webkit-scrollbar-thumb { background: #c8d8f0; border-radius: 99px; }
@@ -311,7 +312,25 @@
 }
 .tec-close-btn:hover { background: rgba(255,255,255,.28); }
 
-.tec-body    { padding: 6px 0 0; }
+.tec-body    { 
+    padding: 6px 0 0;
+    overflow-y: auto;       
+    flex: 1;                
+    scrollbar-width: thin;
+    scrollbar-color: #c8d8f0 transp 
+}
+
+.tec-body::-webkit-scrollbar {
+    width: 4px;
+}
+.tec-body::-webkit-scrollbar-thumb {
+    background: #c8d8f0;
+    border-radius: 99px;
+}
+.tec-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .tec-section { padding: 18px 24px; border-bottom: 1px solid #f0f4fa; }
 .tec-section-header {
     display: flex; align-items: center; gap: 8px;
