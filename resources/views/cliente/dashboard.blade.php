@@ -151,7 +151,7 @@
     </div>
 </div>
 
-<!-- NOTIFICACIÓN PROFESIONAL -->
+<!-- NOTIFICACIÓN PROFESIONAL (POSICIÓN ORIGINAL - ARRIBA DERECHA) -->
 <div id="notificacion-toast" class="toast-notification" style="display: none;">
     <div class="toast-icon" id="toast-icon">
         <i class="fas fa-check-circle"></i>
@@ -178,6 +178,34 @@
             </button>
             <button class="btn-confirmar" id="btn-confirmar-accion">
                 <i class="fas fa-check"></i> Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE ÉXITO PROFESIONAL PARA CREACIÓN DE USUARIO -->
+<div id="modal-exito" class="modal-exito" style="display: none;">
+    <div class="modal-exito-content">
+        <div class="modal-exito-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="modal-exito-body">
+            <h3>¡Usuario creado exitosamente!</h3>
+            <p>Las credenciales han sido enviadas al correo del usuario</p>
+            <div class="exito-detalle">
+                <div class="exito-correo">
+                    <i class="fas fa-envelope"></i>
+                    <span id="exito-correo">correo@ejemplo.com</span>
+                </div>
+                <div class="exito-nota">
+                    <i class="fas fa-info-circle"></i>
+                    <small>El usuario recibirá sus credenciales de acceso por correo electrónico</small>
+                </div>
+            </div>
+        </div>
+        <div class="modal-exito-footer">
+            <button class="btn-entendido" onclick="cerrarModalExito()">
+                <i class="fas fa-check"></i> Entendido
             </button>
         </div>
     </div>
@@ -377,10 +405,10 @@
         background: #e2e8f0;
     }
 
-    /* Toast notification profesional */
+    /* Toast notification - Posición original arriba derecha */
     .toast-notification {
         position: fixed;
-        bottom: 30px;
+        top: 30px;
         right: 30px;
         background: white;
         border-radius: 12px;
@@ -493,6 +521,119 @@
         transform: translateY(-2px);
     }
 
+    /* Modal de éxito para creación de usuario */
+    .modal-exito {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1002;
+        animation: fadeIn 0.3s ease;
+    }
+    .modal-exito-content {
+        background: white;
+        border-radius: 24px;
+        width: 90%;
+        max-width: 420px;
+        text-align: center;
+        animation: bounceIn 0.4s ease;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+    }
+    @keyframes bounceIn {
+        0% { transform: scale(0.8); opacity: 0; }
+        80% { transform: scale(1.05); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-exito-icon {
+        background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        margin: -35px auto 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(56,161,105,0.4);
+    }
+    .modal-exito-icon i {
+        font-size: 36px;
+        color: white;
+    }
+    .modal-exito-body {
+        padding: 30px 28px 20px;
+    }
+    .modal-exito-body h3 {
+        margin: 0 0 10px 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a202c;
+    }
+    .modal-exito-body p {
+        margin: 0 0 20px 0;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .exito-detalle {
+        background: #f0fff4;
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 8px;
+        border: 1px solid #c6f6d5;
+    }
+    .exito-correo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2f855a;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    .exito-correo i {
+        font-size: 16px;
+    }
+    .exito-nota {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 11px;
+        color: #38a169;
+    }
+    .exito-nota i {
+        font-size: 12px;
+    }
+    .modal-exito-footer {
+        padding: 16px 28px 28px;
+    }
+    .btn-entendido {
+        background: linear-gradient(135deg, #13294b 0%, #1a3a6b 100%);
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 40px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.2s;
+    }
+    .btn-entendido:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(19,41,75,0.3);
+    }
+
     .load-more-wrapper { display: flex; justify-content: center; padding: 10px 0 40px; }
     .btn-load-more { background: white; color: #13294b; border: 2px solid #13294b; padding: 12px 36px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; }
     .btn-load-more i { margin-right: 8px; }
@@ -570,7 +711,6 @@
         actualizarVista();
     }
 
-    // Ver detalles con modal profesional
     function verDetalles(index) {
         const user = usuariosData[index];
         const modalBody = document.getElementById('modal-detalles-body');
@@ -620,7 +760,6 @@
         document.getElementById('modal-detalles').style.display = 'none';
     }
 
-    // Modal de confirmación profesional
     function mostrarModalConfirmacion(options) {
         const modal = document.getElementById('modal-confirmacion');
         const iconContainer = document.getElementById('confirm-icon');
@@ -656,7 +795,6 @@
         confirmCallback = null;
     }
 
-    // Notificación profesional
     function showNotification(type, title, message) {
         const toast = document.getElementById('notificacion-toast');
         const icon = document.getElementById('toast-icon');
@@ -707,25 +845,29 @@
         });
     }
 
-    // openModal para nuevo usuario (debe venir del include nuevousuario)
+    // Función para mostrar modal de éxito al crear usuario
+    function mostrarModalExito(correo) {
+        const modal = document.getElementById('modal-exito');
+        const correoElement = document.getElementById('exito-correo');
+        correoElement.textContent = correo;
+        modal.style.display = 'flex';
+    }
+
+    function cerrarModalExito() {
+        const modal = document.getElementById('modal-exito');
+        modal.style.display = 'none';
+        location.reload();
+    }
+
     function openModal() {
-        // Esta función está definida en el componente 'nuevousuario'
-        // Si no existe, la definimos aquí
-        if (typeof window.openModalOriginal === 'function') {
-            window.openModalOriginal();
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        if (modalBackdrop) {
+            modalBackdrop.style.display = 'flex';
         } else {
-            // Intentar llamar al modal del componente
-            const modalBackdrop = document.getElementById('modal-backdrop');
-            if (modalBackdrop) {
-                modalBackdrop.style.display = 'flex';
-            } else {
-                console.error('Modal no encontrado');
-                alert('Función openModal no disponible');
-            }
+            console.error('Modal no encontrado');
         }
     }
 
-    // Cerrar modal con click fuera
     document.getElementById('modal-detalles')?.addEventListener('click', function(e) {
         if (e.target === this) cerrarModalDetalles();
     });
@@ -733,6 +875,14 @@
     document.getElementById('modal-confirmacion')?.addEventListener('click', function(e) {
         if (e.target === this) cerrarModalConfirmacion();
     });
+
+    document.getElementById('modal-exito')?.addEventListener('click', function(e) {
+        if (e.target === this) cerrarModalExito();
+    });
+
+    // Exponer funciones globalmente para que el modal de creación las use
+    window.mostrarModalExito = mostrarModalExito;
+    window.cerrarModalExito = cerrarModalExito;
 
     mostrados = LOTE;
     actualizarVista();

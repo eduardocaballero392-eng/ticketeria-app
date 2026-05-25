@@ -23,15 +23,21 @@ class UsuarioController extends Controller
             return redirect('/')->with('error', 'Acceso restringido.');
         }
 
-        $usuarios = Usuario::orderBy('created_at', 'desc')->get();
+        // SOLO usuarios de este cliente
+        $usuarios = Usuario::where('id_cliente', session('id'))
+                           ->orderBy('created_at', 'desc')
+                           ->get();
         
         // Contar tickets por usuario
         $ticketsPorUsuario = DB::table('ticket')
             ->select('id_usuario', DB::raw('count(*) as total'))
+            ->whereIn('id_usuario', $usuarios->pluck('id_usuario'))
             ->groupBy('id_usuario')
             ->pluck('total', 'id_usuario');
         
-        $tickets = DB::table('ticket')->get();
+        $tickets = DB::table('ticket')
+            ->whereIn('id_usuario', $usuarios->pluck('id_usuario'))
+            ->get();
 
         return view('cliente.usuarios', compact('usuarios', 'ticketsPorUsuario', 'tickets'));
     }
@@ -81,8 +87,9 @@ class UsuarioController extends Controller
                 $codigoUsuario = $iniciales . '-' . $dniPrefix;
             }
 
-            // Crear el usuario - CORREGIDO: 'contraseña' en lugar de 'password', sin 'tipo'
+            // Crear el usuario
             $usuario = Usuario::create([
+                'id_cliente' => session('id'),
                 'nombre' => ucfirst(strtolower($request->nombre)),
                 'apellido_paterno' => ucfirst(strtolower($request->apellido_paterno)),
                 'apellido_materno' => ucfirst(strtolower($request->apellido_materno)),
@@ -91,7 +98,7 @@ class UsuarioController extends Controller
                 'telefono' => $request->telefono,
                 'codigo_pais' => $request->codigo_pais ?? '+51',
                 'codigo_usuario' => $codigoUsuario,
-                'contraseña' => Hash::make($request->dni), // ← CORREGIDO: 'contraseña' con ñ
+                'contraseña' => Hash::make($request->dni),
                 'activo' => 1,
             ]);
 
@@ -99,7 +106,6 @@ class UsuarioController extends Controller
             try {
                 Mail::to($usuario->correo)->send(new CredencialesUsuario($usuario, $request->dni));
             } catch (\Exception $mailError) {
-                // Si falla el envío, igual creamos el usuario pero lo registramos
                 \Log::error('Error al enviar correo: ' . $mailError->getMessage());
             }
 
@@ -157,6 +163,40 @@ class UsuarioController extends Controller
                 'ok' => false,
                 'message' => 'Usuario no encontrado'
             ], 404);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        try {
+            $usuario = Usuario::findOrFail($id);
+            
+            // Verificar si tiene tickets asociados
+            $ticketsCount = DB::table('ticket')->where('id_usuario', $id)->count();
+            
+            if ($ticketsCount > 0) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'No se puede eliminar porque tiene ' . $ticketsCount . ' ticket(s) asociado(s)'
+                ], 400);
+            }
+            
+            $nombre = $usuario->nombre . ' ' . $usuario->apellido_paterno;
+            $usuario->delete();
+            
+            return response()->json([
+                'ok' => true,
+                'message' => 'Usuario ' . $nombre . ' eliminado correctamente'
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Error al eliminar: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
