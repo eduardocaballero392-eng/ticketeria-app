@@ -1,5 +1,3 @@
-/* The above code is a combination of HTML, CSS, and JavaScript that creates a modal for creating a
-user in an admin panel interface. Here is a breakdown of the main functionalities: */
 {{-- ══ MODAL CREAR USUARIO (ADMIN) ══ --}}
 {{-- Requiere que el controlador pase $clientes a la vista --}}
 <div id="modalCrearUsuario" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,15,10,0.72);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
