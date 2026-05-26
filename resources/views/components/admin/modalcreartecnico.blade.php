@@ -26,7 +26,7 @@
                                style="width:100%;padding:10px 13px;border:2px solid #ede9fe;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#faf8ff;color:#1e1b4b"
                                onfocus="this.style.borderColor='#7c3aed';this.style.background='#fff'"
                                onblur="this.style.borderColor='#ede9fe';this.style.background='#faf8ff'"
-                               oninput="generarDatosTecnico()">
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); generarDatosTecnico()">
                     </div>
                     <div>
                         <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">Apellido Paterno <span style="color:#7c3aed">*</span></label>
@@ -34,7 +34,7 @@
                                style="width:100%;padding:10px 13px;border:2px solid #ede9fe;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#faf8ff;color:#1e1b4b"
                                onfocus="this.style.borderColor='#7c3aed';this.style.background='#fff'"
                                onblur="this.style.borderColor='#ede9fe';this.style.background='#faf8ff'"
-                               oninput="generarDatosTecnico()">
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); generarDatosTecnico()">
                     </div>
                 </div>
 
@@ -46,7 +46,7 @@
                                style="width:100%;padding:10px 13px;border:2px solid #ede9fe;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#faf8ff;color:#1e1b4b"
                                onfocus="this.style.borderColor='#7c3aed';this.style.background='#fff'"
                                onblur="this.style.borderColor='#ede9fe';this.style.background='#faf8ff'"
-                               oninput="generarDatosTecnico()">
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); generarDatosTecnico()">
                     </div>
                     <div>
                         <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">DNI <span style="color:#7c3aed">*</span></label>
@@ -61,19 +61,19 @@
                 {{-- Datos autogenerados --}}
                 <div style="background:linear-gradient(135deg,#f5f0ff,#ede9fe);border:1px solid #ddd6fe;border-radius:12px;padding:14px 18px;margin-bottom:6px">
                     <div style="font-size:.72rem;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">⚡ Datos autogenerados</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                    <div style="display:grid;grid-template-columns:2fr 3fr;gap:12px">
                         <div>
                             <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🪪 Código</div>
                             <div id="tec_codigo_preview" style="font-size:.85rem;color:#5b21b6;font-weight:700;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;letter-spacing:.05em">———</div>
                         </div>
-                        <div style="grid-column:span 2">
-                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">📧 Correo</div>
-                            <div id="tec_correo_preview" style="font-size:.78rem;color:#5b21b6;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;word-break:break-all">———</div>
+                        <div>
+                            <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🔑 Contraseña inicial</div>
+                            <div id="tec_pass_preview" style="font-size:.82rem;color:#5b21b6;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;letter-spacing:.08em">———</div>
                         </div>
                     </div>
                     <div style="margin-top:10px">
-                        <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">🔑 Contraseña inicial</div>
-                        <div id="tec_pass_preview" style="font-size:.82rem;color:#5b21b6;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;letter-spacing:.08em">———</div>
+                        <div style="font-size:.72rem;color:#6b7280;font-weight:600;margin-bottom:4px">📧 Correo Electrónico</div>
+                        <div id="tec_correo_preview" style="font-size:.78rem;color:#5b21b6;font-weight:600;background:#fff;padding:7px 10px;border-radius:8px;border:1px solid #ddd6fe;word-break:break-all">———</div>
                     </div>
                 </div>
 
@@ -120,31 +120,40 @@ function normStr(str) {
 }
 
 function generarDatosTecnico() {
+    // Tomamos los valores limpios eliminando espacios extras en los extremos
     const n   = document.getElementById('tec_nombre').value.trim();
     const ap  = document.getElementById('tec_apellido_paterno').value.trim();
     const am  = document.getElementById('tec_apellido_materno').value.trim();
     const dni = document.getElementById('tec_dni').value.trim();
 
+    // Ahora validamos que los 4 campos tengan información coherente antes de previsualizar
     if (!n || !ap || !am || dni.length < 3) {
         ['tec_codigo_preview','tec_correo_preview','tec_pass_preview'].forEach(id =>
             document.getElementById(id).textContent = '———');
         return;
     }
 
+    // Extraemos las iniciales limpias de tildes/eñes
     const i1 = normStr(n).charAt(0).toUpperCase();
     const i2 = normStr(ap).charAt(0).toUpperCase();
     const i3 = normStr(am).charAt(0).toUpperCase();
     const d3 = dni.substring(0, 3);
 
+    // Formamos el código base inicial (Ej: TGL123)
     let codigo = i1 + i2 + i3 + d3;
     let idx = 3;
+    
+    // Evitamos duplicados locales si el set ya conoce este código temporal
     while (_tecCodigosUsados.has(codigo) && idx < dni.length) {
         codigo = i1 + i2 + i3 + dni.substring(0, idx + 1);
         idx++;
     }
 
-    const correo = normStr(n) + codigo.toLowerCase() + '@gmail.com';
+    // Generamos el correo usando el primer nombre limpio + el código generado
+    const primerNombreLimpio = normStr(n.split(' ')[0]);
+    const correo = primerNombreLimpio + codigo.toLowerCase() + '@gmail.com';
 
+    // Seteamos las vistas previas en tiempo real
     document.getElementById('tec_codigo_preview').textContent = codigo;
     document.getElementById('tec_correo_preview').textContent = correo;
     document.getElementById('tec_pass_preview').textContent   = dni;
@@ -159,10 +168,10 @@ async function guardarTecnico() {
 
     // ── Validaciones ──────────────────────────────────────────────────────
     const errores = [];
-    if (!n)                errores.push('El nombre es obligatorio.');
-    if (!ap)               errores.push('El apellido paterno es obligatorio.');
-    if (!am)               errores.push('El apellido materno es obligatorio.');
-    if (!dni)              errores.push('El DNI es obligatorio.');
+    if (!n)   errores.push('El nombre es obligatorio.');
+    if (!ap)  errores.push('El apellido paterno es obligatorio.');
+    if (!am)  errores.push('El apellido materno es obligatorio.');
+    if (!dni) errores.push('El DNI es obligatorio.');
     else if (dni.length !== 8) errores.push('El DNI debe tener 8 dígitos.');
 
     if (errores.length > 0) {
@@ -178,6 +187,7 @@ async function guardarTecnico() {
         return;
     }
 
+    // Estructura de datos exacta para el backend en Laravel
     const datos = {
         nombre:           n,
         apellido_paterno: ap,

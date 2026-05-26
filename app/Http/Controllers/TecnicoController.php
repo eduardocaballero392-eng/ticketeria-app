@@ -246,17 +246,19 @@ class TecnicoController extends Controller
     }
 
     // 3. Validar datos (IDÉNTICO a UsuarioController, adaptado)
+    // 3. Validar datos (IDÉNTICO a UsuarioController, adaptado)
     $validator = Validator::make($request->all(), [
         'nombre'           => 'required|string|max:100',
         'apellido_paterno' => 'required|string|max:100',
         'apellido_materno' => 'required|string|max:100',
+        'dni'              => 'required|numeric|digits_between:3,15', // ← Agregado: solo números de 3 a 15 dígitos
         'correo'           => 'required|email|unique:tecnico,correo,' . $tecnico->id_tecnico . ',id_tecnico',
         'telefono'         => 'required|digits_between:7,15',
         'nueva_contraseña' => 'nullable|min:6',
         'codigo_pais' => [
-        'required',
-        'regex:/^\+?\d{1,4}$/',  // ← Solo permite: + opcional + 1 a 4 números
-        'max:10'  // ← Por seguridad extra
+            'required',
+            'regex:/^\+?\d{1,4}$/',
+            'max:10'
         ],
     ], [
         'nombre.required'           => 'El nombre es obligatorio.',
@@ -268,16 +270,21 @@ class TecnicoController extends Controller
         'apellido_materno.required' => 'El apellido materno es obligatorio.',
         'apellido_materno.string'   => 'El apellido materno debe ser un texto válido.',
         'apellido_materno.max'      => 'El apellido materno no puede superar los 100 caracteres.',
+        
+        // --- MENSAJES PARA EL DNI EN ESPAÑOL ---
+        'dni.required'              => 'El DNI / Documento es obligatorio.',
+        'dni.numeric'               => 'El DNI / Documento solo debe contener números.',
+        'dni.digits_between'        => 'El DNI / Documento debe tener entre 3 y 15 dígitos.',
+        
         'correo.required'           => 'El correo electrónico es obligatorio.',
         'correo.email'              => 'El correo electrónico no tiene un formato válido.',
         'correo.unique'             => 'Este correo ya está registrado en otro técnico.',
         'telefono.required'         => 'El número de teléfono es obligatorio.',
         'telefono.digits_between'   => 'El teléfono debe tener entre 7 y 15 dígitos numéricos.',
         'nueva_contraseña.min'      => 'La nueva contraseña debe tener al menos 6 caracteres.',
-        'codigo_pais.required' => 'El código de país es obligatorio.',
-        'codigo_pais.regex'    => 'El código de país debe tener formato válido (ej: +51, 51, +1).',
+        'codigo_pais.required'      => 'El código de país es obligatorio.',
+        'codigo_pais.regex'         => 'El código de país debe tener formato válido (ej: +51, 51, +1).',
     ]);
-
     if ($validator->fails()) {
         return back()->with('error', $validator->errors()->first());
     }

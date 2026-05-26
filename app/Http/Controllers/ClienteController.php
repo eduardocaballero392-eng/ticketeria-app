@@ -138,6 +138,7 @@ public function storeUsuario(Request $request)
 {
     $cliente = Cliente::find(session('id'));
 
+    // 1. Modificamos las reglas de validación
     $request->validate([
         'nombre' => [
             'required', 'string', 'max:100',
@@ -154,8 +155,8 @@ public function storeUsuario(Request $request)
         'dni' => [
             'required',
             'string',
-            'min:3',
-            'max:15',
+            'max:15',             // Máximo 15 caracteres
+            'regex:/^[0-9]+$/',   // 👈 Obliga a que sean SOLO números
             'unique:usuario,dni'
         ],
         'telefono' => [
@@ -166,11 +167,24 @@ public function storeUsuario(Request $request)
             'regex:/^[0-9]+$/'
         ],
     ], [
+        // 2. Modificamos y añadimos los mensajes personalizados en español
+        'nombre.required'        => 'El nombre es obligatorio.',
+        'nombre.max'             => 'El nombre no debe ser mayor a 100 caracteres.',
         'nombre.regex'           => 'El nombre solo debe contener letras.',
-        'apellido_paterno.regex' => 'El apellido paterno solo debe contener letras.',
-        'apellido_materno.regex' => 'El apellido materno solo debe contener letras.',
-        'dni.min'                => 'El documento debe tener al menos 3 caracteres.',
+        
+        'apellido_paterno.required' => 'El apellido paterno es obligatorio.',
+        'apellido_paterno.max'      => 'El apellido paterno no debe ser mayor a 100 caracteres.',
+        'apellido_paterno.regex'    => 'El apellido paterno solo debe contener letras.',
+        
+        'apellido_materno.required' => 'El apellido materno es obligatorio.',
+        'apellido_materno.max'      => 'El apellido materno no debe ser mayor a 100 caracteres.',
+        'apellido_materno.regex'    => 'El apellido materno solo debe contener letras.',
+        
+        'dni.required'           => 'El DNI / Documento es obligatorio.',
+        'dni.max'                => 'El DNI no debe ser mayor a 15 dígitos.',
+        'dni.regex'              => 'El DNI debe contener solo dígitos numéricos.',
         'dni.unique'             => 'Este DNI ya se encuentra registrado.',
+        
         'telefono.required'      => 'El teléfono es obligatorio.',
         'telefono.min'           => 'El teléfono debe tener al menos 7 dígitos.',
         'telefono.max'           => 'El teléfono no puede tener más de 15 dígitos.',
@@ -232,7 +246,6 @@ public function storeUsuario(Request $request)
         'correo'  => $correoGenerado,
     ]);
 }
-
     public function toggleUsuario($id)
     {
         $cliente = Cliente::find(session('id'));
