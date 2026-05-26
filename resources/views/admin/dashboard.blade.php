@@ -1,4 +1,5 @@
 <div class="dashboard-layout">
+    @include('components.admin.navbar-admin')
     @include('components.admin.sidebar-admin')
     @include('components.notificaciones.alertas')
     @include('components.admin.modalcrearusuario')
@@ -179,6 +180,7 @@
 .dashboard-layout {
     display: flex;
     min-height: 100vh;
+    padding-top: 60px;
 }
 
 .main-content {

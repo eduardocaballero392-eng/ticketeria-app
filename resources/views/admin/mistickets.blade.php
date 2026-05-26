@@ -1,3 +1,4 @@
+@include('components.admin.navbar-admin')
 @include('components.admin.sidebar-admin')
 @include('components.notificaciones.alertas')
 @include('components.admin.editardetalleticket')
@@ -217,7 +218,7 @@ function cerrarPanelEdicion() {}
 <style>
 .main-content {
     margin-left: 260px;
-    padding: 40px;
+    padding: 30px;
     background: #f0f4f8;
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
