@@ -617,39 +617,49 @@ class AdminController extends Controller
     }
 
     public function detalleTicket($id)
-    {
-        $ticket = DB::table('ticket')
-            ->join('tipo_ticket',   'ticket.id_tipo_ticket',           '=', 'tipo_ticket.id_tipo_ticket')
-            ->join('prioridad',     'ticket.id_prioridad',             '=', 'prioridad.id_prioridad')
-            ->join('estado_ticket', 'ticket.id_estado',                '=', 'estado_ticket.id_estado')
-            ->join('cliente',       'ticket.id_cliente',               '=', 'cliente.id_cliente')
-            ->join('usuario as usu','ticket.id_usuario',               '=', 'usu.id_usuario')
-            ->leftJoin('tecnico as tec','ticket.id_tecnico_asignado',  '=', 'tec.id_tecnico')
-            ->where('ticket.id_ticket', $id)
-            ->select(
-                'ticket.*',
-                'tipo_ticket.nombre              as tipo_ticket_nombre',
-                'prioridad.nombre                as prioridad_nombre',
-                'prioridad.color_hex             as prioridad_color',
-                'estado_ticket.nombre_estado     as estado',
-                'estado_ticket.color_hex         as estado_color',
-                'cliente.razon_social', 'cliente.ruc',
-                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
-                'usu.codigo_usuario',
-                DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
-                DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
-                'tec.codigo_tecnico as tecnico_codigo'
-            )
-            ->first();
+{
+    $ticket = DB::table('ticket')
+        ->join('tipo_ticket',   'ticket.id_tipo_ticket',           '=', 'tipo_ticket.id_tipo_ticket')
+        ->join('prioridad',     'ticket.id_prioridad',             '=', 'prioridad.id_prioridad')
+        ->join('estado_ticket', 'ticket.id_estado',                '=', 'estado_ticket.id_estado')
+        ->join('cliente',       'ticket.id_cliente',               '=', 'cliente.id_cliente')
+        ->join('usuario as usu','ticket.id_usuario',               '=', 'usu.id_usuario')
+        ->leftJoin('tecnico as tec','ticket.id_tecnico_asignado',  '=', 'tec.id_tecnico')
+        ->where('ticket.id_ticket', $id)
+        ->select(
+            'ticket.*',
+            'tipo_ticket.nombre              as tipo_ticket_nombre',
+            'prioridad.nombre                as prioridad_nombre',
+            'prioridad.color_hex             as prioridad_color',
+            'estado_ticket.nombre_estado     as estado',
+            'estado_ticket.color_hex         as estado_color',
+            'cliente.razon_social', 'cliente.ruc',
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
+            'usu.codigo_usuario',
+            DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+            DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,'')) as tecnico_nombre"),
+            'tec.codigo_tecnico as tecnico_codigo'
+        )
+        ->first();
 
-        if (!$ticket) return response()->json(['message' => 'No encontrado'], 404);
+    if (!$ticket) {
+        return request()->wantsJson() || request()->ajax() 
+            ? response()->json(['message' => 'No encontrado'], 404) 
+            : abort(404);
+    }
 
-        $ticket->evidencias  = DB::table('evidencia')->where('id_ticket', $id)->get();
-        $ticket->comentarios = DB::table('comentario')->where('id_ticket', $id)->orderBy('created_at')->get();
-        $ticket->reportes    = DB::table('reporte_tecnico')->where('id_ticket', $id)->get();
+    $ticket->evidencias  = DB::table('evidencia')->where('id_ticket', $id)->get();
+    $ticket->comentarios = DB::table('comentario')->where('id_ticket', $id)->orderBy('created_at')->get();
+    $ticket->reportes    = DB::table('reporte_tecnico')->where('id_ticket', $id)->get();
 
+    // ✅ SI ES AJAX/JSON → Devuelve datos para el modal
+    if (request()->wantsJson() || request()->ajax()) {
         return response()->json($ticket);
     }
+
+    // ✅ SI ES NAVEGACIÓN NORMAL → Devuelve la vista completa
+    return view('admin.tickets.detalle', compact('ticket'));
+}
 
     public function cancelarTicket(Request $request, $id)
     {

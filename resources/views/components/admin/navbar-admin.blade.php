@@ -403,25 +403,25 @@
           @endphp
 
           @forelse($pendingTickets as $ticket)
-            <a href="{{ route('admin.ticket.detalle', $ticket->id_ticket) }}" class="notif-item">
-              <div class="notif-icon-circle">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-              </div>
-              <div class="notif-content">
-                <p class="notif-text">{{ Str::limit($ticket->asunto, 40) }}</p>
-                <p class="notif-meta">
-                  <span>{{ $ticket->codigo_ticket }}</span>
-                  <span class="notif-dot">•</span>
-                  <span>Hace {{ $ticket->created_at->diffForHumans() }}</span>
-                </p>
-              </div>
-            </a>
-          @empty
-            <div class="notif-empty">
-              <i class="fa-solid fa-circle-check" style="font-size: 2rem; margin-bottom: 8px;"></i>
-              <p>¡Todo al día! No hay tickets pendientes.</p>
+            <div class="notif-item" data-ticket-id="{{ $ticket->id_ticket }}" style="cursor:pointer;">
+                <div class="notif-icon-circle">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="notif-content">
+                    <p class="notif-text">{{ Str::limit($ticket->asunto, 40) }}</p>
+                    <p class="notif-meta">
+                        <span>{{ $ticket->codigo_ticket }}</span>
+                        <span class="notif-dot">•</span>
+                        <span>Hace {{ $ticket->created_at->diffForHumans() }}</span>
+                    </p>
+                </div>
             </div>
-          @endforelse
+        @empty
+            <div class="notif-empty">
+                <i class="fa-solid fa-circle-check" style="font-size: 2rem; margin-bottom: 8px;"></i>
+                <p>¡Todo al día! No hay tickets pendientes.</p>
+            </div>
+        @endforelse
         </div>
       </div>
     </div>
@@ -582,4 +582,32 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 });
+
+/* ═══════════════════════════════════════════════════════════
+   NOTIFICACIONES → ABRIR MODAL (USA TU FUNCIÓN EXISTENTE)
+   ═══════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.notif-item[data-ticket-id]').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const ticketId = this.getAttribute('data-ticket-id');
+            if (!ticketId) return;
+
+            // Cerrar dropdown de notificaciones
+            const dropdown = document.getElementById('notifDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+
+            // 🟢 LLAMAR A LA FUNCIÓN NATIVA DE TU MODAL
+            if (typeof abrirDetalleTicket === 'function') {
+                abrirDetalleTicket(ticketId);
+            } else {
+                console.warn('⚠️ La función abrirDetalleTicket() no está disponible.');
+                // Fallback seguro: redirigir si el modal no se cargó
+                window.location.href = `/admin/ticket/${ticketId}/detalle`;
+            }
+        });
+    });
+});
+
 </script>

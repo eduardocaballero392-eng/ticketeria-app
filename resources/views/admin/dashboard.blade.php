@@ -1,4 +1,5 @@
 <div class="dashboard-layout">
+    @include('components.admin.detalleticket')
     @include('components.admin.navbar-admin')
     @include('components.admin.sidebar-admin')
     @include('components.notificaciones.alertas')

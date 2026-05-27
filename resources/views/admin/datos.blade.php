@@ -2,6 +2,7 @@
     @include('components.admin.navbar-admin')
     @include('components.admin.sidebar-admin')
     @include('components.notificaciones.alertas')
+    @include('components.admin.detalleticket')    
 
     <main class="main-content">
         <div class="content-wrapper">

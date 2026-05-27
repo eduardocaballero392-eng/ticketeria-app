@@ -2,6 +2,7 @@
 @include('components.admin.sidebar-admin')
 @include('components.notificaciones.alertas')
 @include('components.admin.editardetalleticket')
+@include('components.admin.detalleticket')
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
