@@ -30,11 +30,16 @@
                                onkeypress="return soloLetras(event)">
                     </div>
                     <div class="form-group">
-                        <label>DNI / Documento <span class="label-hint">(mín. 3 caracteres)</span></label>
+                        <label>DNI <span class="label-hint">(8 dígitos)</span></label>
                         <input type="text" name="dni" id="inp-dni"
-                               maxlength="15"
+                               maxlength="8"
+                               minlength="8"
+                               pattern="[0-9]{8}"
+                               title="El DNI debe tener 8 dígitos numéricos"
                                value="{{ old('dni') }}"
-                               required oninput="generarCodigo()">
+                               required 
+                               oninput="validarDNI(this); generarCodigo();"
+                               onkeypress="return soloNumeros(event)">
                     </div>
                     <div class="form-group">
                         <label>Apellido paterno</label>
@@ -54,13 +59,19 @@
                     </div>
 
                     <div class="form-group full">
-                        <label>Teléfono móvil</label>
+                        <label>Teléfono móvil <span class="label-hint">(9 dígitos)</span></label>
                         <input type="tel" id="phone" name="telefono" required
                                placeholder="Ej: 987654321"
-                               maxlength="15"
+                               maxlength="9"
+                               minlength="9"
+                               pattern="[0-9]{9}"
+                               title="El teléfono debe tener 9 dígitos numéricos"
                                value="{{ old('telefono') }}"
-                               oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,15)">
+                               oninput="validarTelefono(this)">
                         <input type="hidden" name="codigo_pais" id="codigo_pais">
+                        <small id="telefono-hint" style="font-size: 10px; display: none; color: #e53e3e; margin-top: 4px;">
+                            ⚠️ El teléfono debe tener 9 dígitos
+                        </small>
                     </div>
 
                     <div class="form-group full">
@@ -82,7 +93,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModalBtn()">Cancelar</button>
-                <button type="submit" class="btn-save">Crear usuario</button>
+                <button type="submit" class="btn-save" id="btn-submit">Crear usuario</button>
             </div>
         </form>
     </div>
@@ -136,6 +147,8 @@
     .label-hint     { font-size: 9px; font-weight: 400; color: #94a3b8; text-transform: none; letter-spacing: 0; }
     .form-group input { padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s; width: 100%; box-sizing: border-box; }
     .form-group input:focus { border-color: #13294b; box-shadow: 0 0 0 3px rgba(19,41,75,0.1); }
+    .form-group input.invalid { border-color: #e53e3e; background: #fff5f5; }
+    .form-group input.valid { border-color: #38a169; background: #f0fff4; }
     .iti            { width: 100%; }
     #phone          { padding-left: 52px !important; width: 100%; box-sizing: border-box; }
     .codigo-preview { background: linear-gradient(135deg, #13294b 0%, #1a3a6b 100%); border-radius: 12px; padding: 16px 20px; margin-top: 20px; color: white; }
@@ -147,6 +160,7 @@
     .btn-cancel:hover { background: #f8fafc; border-color: #cbd5e1; }
     .btn-save       { padding: 10px 28px; border-radius: 10px; background: linear-gradient(135deg, #13294b 0%, #1a3a6b 100%); color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; }
     .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(19,41,75,0.3); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     /* Modal de éxito profesional */
     .modal-exito {
@@ -289,7 +303,59 @@
 <script>
     let exitoCallback = null;
 
-    // ── Teléfono ──────────────────────────────────────────────────────────
+    // ── Validar DNI (solo números, 8 dígitos) ─────────────────────────────────
+    function validarDNI(input) {
+        const valor = input.value;
+        const regex = /^\d{0,8}$/;
+        if (!regex.test(valor)) {
+            input.value = valor.slice(0, -1);
+        }
+        if (input.value.length === 8) {
+            input.classList.remove('invalid');
+            input.classList.add('valid');
+        } else {
+            input.classList.remove('valid');
+            if (input.value.length > 0) {
+                input.classList.add('invalid');
+            } else {
+                input.classList.remove('invalid');
+            }
+        }
+    }
+
+    // ── Validar Teléfono (solo números, 9 dígitos) ────────────────────────────
+    function validarTelefono(input) {
+        const valor = input.value;
+        const regex = /^\d{0,9}$/;
+        const hint = document.getElementById('telefono-hint');
+        
+        if (!regex.test(valor)) {
+            input.value = valor.slice(0, -1);
+        }
+        
+        if (input.value.length === 9) {
+            input.classList.remove('invalid');
+            input.classList.add('valid');
+            if (hint) hint.style.display = 'none';
+        } else {
+            input.classList.remove('valid');
+            if (input.value.length > 0) {
+                input.classList.add('invalid');
+                if (hint) hint.style.display = 'block';
+            } else {
+                input.classList.remove('invalid');
+                if (hint) hint.style.display = 'none';
+            }
+        }
+    }
+
+    // ── Solo números ──────────────────────────────────────────────────────────
+    function soloNumeros(e) {
+        const tecla = e.key;
+        return /^[0-9]$/.test(tecla) || tecla === 'Backspace' || tecla === 'Tab' || tecla === 'Delete';
+    }
+
+    // ── Teléfono ──────────────────────────────────────────────────────────────
     const phoneInput = window.intlTelInput(document.querySelector("#phone"), {
         initialCountry: "pe",
         preferredCountries: ["pe", "cl", "co"],
@@ -300,7 +366,7 @@
         document.getElementById('codigo_pais').value = '+' + phoneInput.getSelectedCountryData().dialCode;
     });
 
-    // ── Validación frontend y submit ──────────────────────────────────────
+    // ── Validación frontend y submit ──────────────────────────────────────────
     document.getElementById("form-nuevo-usuario").addEventListener("submit", async function(e) {
         e.preventDefault();
 
@@ -311,18 +377,22 @@
         const mat    = document.getElementById('inp-mat').value.trim();
         const dni    = document.getElementById('inp-dni').value.trim();
         const correo = document.getElementById('inp-correo').value.trim();
-        const phone  = phoneInput.getNumber();
+        const telefono = document.getElementById('phone').value.trim();
         
         const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!nombre)             errores.push('El nombre es obligatorio.');
-        if (!pat)                errores.push('El apellido paterno es obligatorio.');
-        if (!mat)                errores.push('El apellido materno es obligatorio.');
-        if (!dni)                errores.push('El documento es obligatorio.');
-        else if (dni.length < 3) errores.push('El documento debe tener al menos 3 caracteres.');
-        if (!correo)             errores.push('El correo institucional es obligatorio.');
+        if (!nombre) errores.push('El nombre es obligatorio.');
+        if (!pat) errores.push('El apellido paterno es obligatorio.');
+        if (!mat) errores.push('El apellido materno es obligatorio.');
+        
+        if (!dni) errores.push('El DNI es obligatorio.');
+        else if (!/^\d{8}$/.test(dni)) errores.push('El DNI debe tener exactamente 8 dígitos numéricos.');
+        
+        if (!telefono) errores.push('El teléfono es obligatorio.');
+        else if (!/^\d{9}$/.test(telefono)) errores.push('El teléfono debe tener exactamente 9 dígitos numéricos.');
+        
+        if (!correo) errores.push('El correo institucional es obligatorio.');
         else if (!regexEmail.test(correo)) errores.push('Ingrese un correo electrónico válido.');
-        if (!phone)              errores.push('El teléfono es obligatorio.');
 
         if (errores.length > 0) {
             errores.forEach(error => showNotification('danger', 'Error', error));
@@ -351,10 +421,7 @@
 
             if (response.ok && data.ok) {
                 closeModalBtn();
-                
-                // Mostrar modal de éxito profesional
                 mostrarModalExito(correo);
-                
             } else {
                 if (data.errors) {
                     Object.values(data.errors).flat().forEach(error => {
@@ -373,7 +440,7 @@
         }
     });
 
-    // ── Modal de éxito profesional ─────────────────────────────────────────
+    // ── Modal de éxito profesional ─────────────────────────────────────────────
     function mostrarModalExito(correo) {
         const modal = document.getElementById('modal-exito');
         const correoElement = document.getElementById('exito-correo');
@@ -387,7 +454,6 @@
         location.reload();
     }
 
-    // Cerrar modal con click fuera
     document.getElementById('modal-exito')?.addEventListener('click', function(e) {
         if (e.target === this) cerrarModalExito();
     });
@@ -416,9 +482,9 @@
         const iP     = primeraInicial('inp-pat');
         const iM     = primeraInicial('inp-mat');
         const dni    = document.getElementById('inp-dni').value.trim();
-        const prefijo = limpiar(dni).substring(0, 3).toUpperCase();
+        const prefijo = dni.substring(0, 3);
 
-        if (iN && iP && iM && prefijo.length === 3) {
+        if (iN && iP && iM && prefijo.length === 3 && dni.length === 8) {
             const code = `${iN}${iP}${iM}-${prefijo}`;
             document.getElementById('codigo-display').innerText = code;
             document.getElementById('codigo-hidden').value      = code;
