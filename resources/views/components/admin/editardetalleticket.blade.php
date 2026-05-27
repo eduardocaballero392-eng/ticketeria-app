@@ -554,7 +554,7 @@ window._tecTicketId   = null;
 window._tecTienReporte = false;
 
 // ── Abrir modal técnico ──────────────────────────────────────────
-async function abrirDetalleTicket(id) {
+async function abrirModalEdicion(id) {
     try {
         const res  = await fetch(`/admin/ticket/${id}/detalle`, {
             headers: { 'Accept': 'application/json' }
@@ -704,7 +704,7 @@ async function tecGuardarCampos() {
         const data = await res.json();
         if (data.ok) {
             tecNotif('success', '¡Guardado!', 'Campos actualizados y ticket en proceso.');
-            setTimeout(() => abrirDetalleTicket(id), 900);
+            setTimeout(() => abrirModalEdicion(id), 900);
         } else {
             tecNotif('danger', 'Error', data.message || 'No se pudo guardar.');
         }
@@ -735,7 +735,7 @@ async function tecGuardarComentario() {
         const data = await res.json();
         if (data.ok) {
             tecNotif('success', '¡Listo!', 'Comentario agregado y ticket en proceso.');
-            setTimeout(() => abrirDetalleTicket(id), 900);
+            setTimeout(() => abrirModalEdicion(id), 900);
         } else {
             tecNotif('danger', 'Error', data.message || 'No se pudo guardar.');
         }
@@ -788,7 +788,7 @@ async function tecSubirReporte() {
         const data = await res.json();
         if (data.ok) {
             tecNotif('success', '¡Subido!', 'Reporte técnico guardado y ticket en proceso.');
-            setTimeout(() => abrirDetalleTicket(id), 900);
+            setTimeout(() => abrirModalEdicion(id), 900);
         } else {
             tecNotif('danger', 'Error', data.message || 'No se pudo subir.');
         }

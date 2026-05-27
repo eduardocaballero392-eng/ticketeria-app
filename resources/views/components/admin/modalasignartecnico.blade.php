@@ -400,28 +400,18 @@ async function confirmarAsignacion() {
         if (data.ok) {
             cerrarModalAsignar();
 
-            // Notificación de éxito
+            // ✅ Usa tu sistema de notificaciones (ya incluido en alertas.blade.php)
             if (typeof showNotification === 'function') {
-                showNotification('success', '¡Técnico asignado!', `El ticket pasó a estado PROGRAMADO.`);
+                showNotification('success', '¡Técnico asignado!', 'El ticket pasó a estado PROGRAMADO.');
             }
 
-            // Actualizar en memoria el array de tickets para reflejar cambio sin reload
-            if (typeof TICKETS_POR_USUARIO !== 'undefined' && window._matTicketUserId) {
-                const lista = TICKETS_POR_USUARIO[window._matTicketUserId] || [];
-                const t     = lista.find(x => x.id_ticket == idTicket);
-                if (t) {
-                    t.estado          = 'PROGRAMADO';
-                    t.tecnico_nombre  = data.tecnico || '';
-                }
-                renderTickets(lista, filtroTicketActual);
-            } else {
-                setTimeout(() => location.reload(), 900);
-            }
+            // ✅ Recarga para actualizar KPIs y listas del dashboard
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         } else {
             if (typeof showNotification === 'function') {
                 showNotification('danger', 'Error', data.message || 'No se pudo asignar.');
-            } else {
-                alert(data.message || 'Error al asignar.');
             }
         }
     } catch (e) {

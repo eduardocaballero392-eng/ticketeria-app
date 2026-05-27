@@ -314,6 +314,13 @@
         <span class="sb-tooltip">Contactos</span>
     </a>
 
+    <a href="{{ route('admin.clientes') }}"
+   class="sb-nav-item {{ Route::is('admin.clientes') ? 'active' : '' }}">
+   <span class="sb-nav-icon"><i class="fa-solid fa-building"></i></span>
+   <span class="sb-nav-text">Clientes</span>
+   <span class="sb-tooltip">Clientes</span>
+  </a>
+
   </nav>
 
   <div class="sb-bottom">

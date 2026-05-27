@@ -187,7 +187,7 @@ function mtRender() {
     </div>
 
     <div class="mt-card-footer">
-        <button class="mt-btn-detalle" onclick="abrirDetalleTicket(${t.id_ticket})">
+        <button class="mt-btn-detalle" onclick="abrirModalEdicion(${t.id_ticket})">
             👁 Ver detalle
         </button>
     </div>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use Carbon\Carbon;
 use App\Models\Tecnico;
 use App\Models\Usuario;
 use App\Models\Cliente;
@@ -19,6 +20,10 @@ class AdminController extends Controller
             return redirect('/')->with('error', 'Acceso restringido.');
         }
 
+        // ═══════════════════════════════════════════════════════
+        // ✅ TU CÓDIGO ORIGINAL (MANTENIDO PARA COMPATIBILIDAD)
+        // ═══════════════════════════════════════════════════════
+        
         // Tickets con toda la info
         $tickets = DB::table('ticket')
             ->join('tipo_ticket',   'ticket.id_tipo_ticket',          '=', 'tipo_ticket.id_tipo_ticket')
@@ -39,37 +44,32 @@ class AdminController extends Controller
                 'usu.codigo_usuario',
                 DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
                 DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,''),' ',COALESCE(tec.apellido_materno,'')) as tecnico_nombre"),
-                'tec.codigo_tecnico              as tecnico_codigo'  // ✅
+                'tec.codigo_tecnico              as tecnico_codigo'
             )
             ->orderByDesc('ticket.created_at')
             ->get();
 
-        $ticketIds = $tickets->pluck('id_ticket')->toArray();
+            if (request()->filled('desde') && request()->filled('hasta')) {
+                $desde = \Carbon\Carbon::parse(request('desde'))->startOfDay();
+                $hasta = \Carbon\Carbon::parse(request('hasta'))->endOfDay();
+                $tickets = $tickets->filter(fn($t) => \Carbon\Carbon::parse($t->created_at)->between($desde, $hasta));
+            }   
 
-        $evidencias  = DB::table('evidencia')
-            ->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
-        $comentarios = DB::table('comentario')
-            ->whereIn('id_ticket', $ticketIds)->orderBy('created_at')->get()->groupBy('id_ticket');
-        $reportes    = DB::table('reporte_tecnico')
-            ->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
+        $ticketIds = $tickets->pluck('id_ticket')->toArray();
+        $evidencias  = DB::table('evidencia')->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
+        $comentarios = DB::table('comentario')->whereIn('id_ticket', $ticketIds)->orderBy('created_at')->get()->groupBy('id_ticket');
+        $reportes    = DB::table('reporte_tecnico')->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
 
         $tickets->each(function ($ticket) use ($evidencias, $comentarios, $reportes) {
-            $ticket->evidencias  = $evidencias->get($ticket->id_ticket,  collect());
+            $ticket->evidencias  = $evidencias->get($ticket->id_ticket, collect());
             $ticket->comentarios = $comentarios->get($ticket->id_ticket, collect());
-            $ticket->reportes    = $reportes->get($ticket->id_ticket,    collect());
+            $ticket->reportes    = $reportes->get($ticket->id_ticket, collect());
         });
 
-        // Técnicos disponibles para asignar
         $tecnicos = Tecnico::where('activo', 1)->orderBy('nombre')->get();
-
-        // 2. Usuarios (AQUÍ ESTÁ EL CAMBIO)
-        // Cambia la línea $usuario = ... por esta:
-        $usuarios_lista = Usuario::orderBy('nombre')->get(); // <--- Esta es la variable que el Blade está buscando
-            
-        // Clientes para filtros
+        $usuarios_lista = Usuario::orderBy('nombre')->get();
         $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
 
-        // Contadores resumen
         $resumen = [
             'total'      => $tickets->count(),
             'pendiente'  => $tickets->where('estado', 'PENDIENTE')->count(),
@@ -80,7 +80,79 @@ class AdminController extends Controller
             'total_usuarios' => $usuarios_lista->count(),
         ];
 
-        return view('admin.dashboard', compact('tickets', 'tecnicos', 'usuarios_lista','clientes', 'resumen'));
+        // ═══════════════════════════════════════════════════════
+        // ➕ NUEVO: DATOS PARA EL DASHBOARD ENTERPRISE
+        // ═══════════════════════════════════════════════════════
+
+        // ── KPIs Principales ──
+        $kpi = [
+            'total'        => $tickets->count(),
+            'pendientes'   => $tickets->where('estado', 'PENDIENTE')->count(),
+            'en_proceso'   => $tickets->where('estado', 'EN PROCESO')->count(),
+            'cerrados_hoy' => $tickets->where('estado', 'CERRADO')
+                            ->filter(fn($t) => $t->fecha_resuelto && \Carbon\Carbon::parse($t->fecha_resuelto)->isToday())
+                            ->count(),
+            'alta_critica' => $tickets->whereIn('prioridad_nombre', ['Alta', 'Crítica', 'Urgente'])->count(),
+        ];
+
+        // ── Técnicos: Libres vs Ocupados ──
+        $idsOcupados = DB::table('ticket')
+            ->join('estado_ticket', 'ticket.id_estado', '=', 'estado_ticket.id_estado')
+            ->whereIn('estado_ticket.nombre_estado', ['PENDIENTE', 'PROGRAMADO', 'EN PROCESO'])
+            ->whereNotNull('ticket.id_tecnico_asignado')
+            ->distinct()
+            ->pluck('ticket.id_tecnico_asignado')
+            ->toArray();
+
+        $totalActivos = $tecnicos->count();
+        $tecnicos_ocupados = count(array_unique($idsOcupados));
+        $tecnicos_libres   = max(0, $totalActivos - $tecnicos_ocupados);
+
+        // ── Panel de Asignación Rápida ──
+        $asignacion_rapida = DB::table('ticket')
+            ->join('prioridad', 'ticket.id_prioridad', '=', 'prioridad.id_prioridad')
+            ->join('cliente', 'ticket.id_cliente', '=', 'cliente.id_cliente')
+            ->join('estado_ticket', 'ticket.id_estado', '=', 'estado_ticket.id_estado')
+            ->leftJoin('usuario as usu', 'ticket.id_usuario', '=', 'usu.id_usuario') 
+            ->whereNull('ticket.id_tecnico_asignado')
+            ->whereNotIn('estado_ticket.nombre_estado', ['CERRADO', 'CANCELADO'])
+            ->orderByRaw("FIELD(prioridad.nombre, 'Crítica', 'Alta', 'Media', 'Baja')")
+            ->orderByDesc('ticket.created_at')
+            ->limit(8)
+            ->select(
+                'ticket.id_ticket',
+                'ticket.codigo_ticket',
+                'ticket.asunto',
+                'ticket.created_at',
+                'prioridad.nombre as prioridad',
+                'prioridad.color_hex',
+                'cliente.razon_social',
+                DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre")
+            )
+            ->get();
+
+        // ── Estado del Sistema ──
+        $sistema = [
+            'clientes_activos'       => $clientes->where('activo', 1)->count(),
+            'usuarios_bloqueados'    => $usuarios_lista->where('activo', 0)->count(),
+            'tickets_sin_asignar_viejo' => $tickets->whereNull('id_tecnico_asignado')
+                ->filter(fn($t) => \Carbon\Carbon::parse($t->created_at)->lt(\Carbon\Carbon::now()->subDays(3)))
+                ->count(),
+        ];
+
+        // ── Técnicos para selects (reutilizamos colección) ──
+        $tecnicos_select = $tecnicos;
+
+        // ═══════════════════════════════════════════════════════
+        // ✅ RETORNO ACTUALIZADO (original + nuevo)
+        // ═══════════════════════════════════════════════════════
+        return view('admin.dashboard', compact(
+            // Original (para compatibilidad con tu vista actual)
+            'tickets', 'tecnicos', 'usuarios_lista', 'clientes', 'resumen',
+            // Nuevo (para el dashboard enterprise)
+            'kpi', 'tecnicos_libres', 'tecnicos_ocupados',
+            'asignacion_rapida', 'sistema', 'tecnicos_select'
+        ));
     }
 
 
@@ -939,4 +1011,78 @@ class AdminController extends Controller
 
         return view('admin.contactos', compact('clientes', 'usuarios'));
     }
+
+public function clientes()
+{
+    if (session('tipo') !== 'admin' || !session('id')) {
+        return redirect('/')->with('error', 'Acceso restringido.');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // ✅ CÓDIGO REAL (igual que dashboard, para compatibilidad)
+    // ═══════════════════════════════════════════════════════
+    
+    // Tickets con toda la info
+    $tickets = DB::table('ticket')
+        ->join('tipo_ticket',   'ticket.id_tipo_ticket',          '=', 'tipo_ticket.id_tipo_ticket')
+        ->join('prioridad',     'ticket.id_prioridad',            '=', 'prioridad.id_prioridad')
+        ->join('estado_ticket', 'ticket.id_estado',               '=', 'estado_ticket.id_estado')
+        ->join('cliente',       'ticket.id_cliente',              '=', 'cliente.id_cliente')
+        ->join('usuario as usu','ticket.id_usuario',              '=', 'usu.id_usuario')
+        ->leftJoin('tecnico as tec', 'ticket.id_tecnico_asignado','=', 'tec.id_tecnico')
+        ->select(
+            'ticket.*',
+            'tipo_ticket.nombre              as tipo_ticket_nombre',
+            'prioridad.nombre                as prioridad_nombre',
+            'prioridad.color_hex             as prioridad_color',
+            'estado_ticket.nombre_estado     as estado',
+            'cliente.razon_social',
+            'cliente.ruc',
+            DB::raw("CONCAT(usu.nombre,' ',usu.apellido_paterno,' ',usu.apellido_materno) as usuario_nombre"),
+            'usu.codigo_usuario',
+            DB::raw("CONCAT(COALESCE(usu.codigo_pais,''),' ',COALESCE(usu.telefono,'')) as usuario_telefono"),
+            DB::raw("CONCAT(COALESCE(tec.nombre,''),' ',COALESCE(tec.apellido_paterno,''),' ',COALESCE(tec.apellido_materno,'')) as tecnico_nombre"),
+            'tec.codigo_tecnico              as tecnico_codigo'
+        )
+        ->orderByDesc('ticket.created_at')
+        ->get();
+
+    $ticketIds = $tickets->pluck('id_ticket')->toArray();
+    $evidencias  = DB::table('evidencia')->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
+    $comentarios = DB::table('comentario')->whereIn('id_ticket', $ticketIds)->orderBy('created_at')->get()->groupBy('id_ticket');
+    $reportes    = DB::table('reporte_tecnico')->whereIn('id_ticket', $ticketIds)->get()->groupBy('id_ticket');
+
+    $tickets->each(function ($ticket) use ($evidencias, $comentarios, $reportes) {
+        $ticket->evidencias  = $evidencias->get($ticket->id_ticket, collect());
+        $ticket->comentarios = $comentarios->get($ticket->id_ticket, collect());
+        $ticket->reportes    = $reportes->get($ticket->id_ticket, collect());
+    });
+
+    // Técnicos disponibles
+    $tecnicos = Tecnico::where('activo', 1)->orderBy('nombre')->get();
+    
+    // Usuarios
+    $usuarios_lista = Usuario::orderBy('nombre')->get();
+    
+    // Clientes
+    $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+
+    // Contadores resumen
+    $resumen = [
+        'total'      => $tickets->count(),
+        'pendiente'  => $tickets->where('estado', 'PENDIENTE')->count(),
+        'programado' => $tickets->where('estado', 'PROGRAMADO')->count(),
+        'en_proceso' => $tickets->where('estado', 'EN PROCESO')->count(),
+        'cerrado'    => $tickets->where('estado', 'CERRADO')->count(),
+        'cancelado'  => $tickets->where('estado', 'CANCELADO')->count(),
+        'total_usuarios' => $usuarios_lista->count(),
+    ];
+
+    // ═══════════════════════════════════════════════════════
+    // ✅ RETORNO PARA LA VISTA DE CLIENTES
+    // ═══════════════════════════════════════════════════════
+    return view('admin.clientes', compact(
+        'tickets', 'tecnicos', 'usuarios_lista', 'clientes', 'resumen'
+    ));
+}
 }
