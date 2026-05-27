@@ -77,19 +77,21 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
                     <div>
                         <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">Nombre <span style="color:#059669">*</span></label>
-                        <input id="usu_nombre" type="text" placeholder="Ej. María"
+                        <input id="usu_nombre" type="text" placeholder="Ej. María" maxlength="100"
                                style="width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f0fdf4;color:#111827"
                                onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
                                onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'"
-                               oninput="generarDatosUsuario()">
+                               onkeypress="return soloLetras(event)"
+                               oninput="if(this.value.length >= 100) { showNotification('danger', 'Error', 'Solo se permite un máximo de 100 caracteres'); } this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); generarDatosUsuario()">
                     </div>
                     <div>
                         <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">Apellido Paterno <span style="color:#059669">*</span></label>
-                        <input id="usu_apellido_paterno" type="text" placeholder="Ej. Torres"
+                        <input id="usu_apellido_paterno" type="text" placeholder="Ej. Torres" maxlength="100"
                                style="width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f0fdf4;color:#111827"
                                onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
                                onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'"
-                               oninput="generarDatosUsuario()">
+                               onkeypress="return soloLetras(event)"
+                               oninput="if(this.value.length >= 100) { showNotification('danger', 'Error', 'Solo se permite un máximo de 100 caracteres'); } this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); generarDatosUsuario()">
                     </div>
                 </div>
 
@@ -97,16 +99,17 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
                     <div>
                         <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">Apellido Materno <span style="color:#059669">*</span></label>
-                        <input id="usu_apellido_materno" type="text" placeholder="Ej. Quispe"
+                        <input id="usu_apellido_materno" type="text" placeholder="Ej. Quispe" maxlength="100"
                                style="width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f0fdf4;color:#111827"
                                onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
                                onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'"
-                               oninput="generarDatosUsuario()">
+                               onkeypress="return soloLetras(event)"
+                               oninput="if(this.value.length >= 100) { showNotification('danger', 'Error', 'Solo se permite un máximo de 100 caracteres'); } this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''); generarDatosUsuario()">
                     </div>
                     <div>
-                        <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">DNI <span style="color:#059669">*</span></label>
-                        <input id="usu_dni" type="text" placeholder="8 dígitos" maxlength="8"
-                               oninput="this.value=this.value.replace(/[^0-9]/g,'');generarDatosUsuario()"
+                        <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">DNI / Documento <span style="color:#059669">*</span></label>
+                        <input id="usu_dni" type="text" placeholder="Máx. 15 dígitos" maxlength="15"
+                               oninput="if(this.value.length >= 15) { showNotification('danger', 'Error', 'Solo se permite un máximo de 15 dígitos'); } this.value=this.value.replace(/[^0-9]/g,'');generarDatosUsuario()"
                                style="width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f0fdf4;color:#111827"
                                onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
                                onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'">
@@ -114,24 +117,24 @@
                 </div>
 
                 {{-- Teléfono --}}
-                    <div style="margin-bottom:16px">
-                            <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
-                                Teléfono <span style="color:#059669">*</span>
-                            </label>
+                <div style="margin-bottom:16px">
+                    <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">
+                        Teléfono <span style="color:#059669">*</span>
+                    </label>
 
-                            <input
-                                id="usu_telefono"
-                                type="tel"
-                                placeholder="Ej: 987654321"
-                                maxlength="15"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                style="padding-left:52px !important;width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;background:#f0fdf4;color:#111827"
-                                onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
-                                onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'"
-                            >
+                    <input
+                        id="usu_telefono"
+                        type="tel"
+                        placeholder="Ej: 987654321"
+                        maxlength="15"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        style="padding-left:52px !important;width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;box-sizing:border-box;background:#f0fdf4;color:#111827"
+                        onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
+                        onblur="this.style.borderColor='#d1fae5';this.style.background='#f0fdf4'"
+                    >
 
-                            <input type="hidden" id="usu_codigo_pais" value="+51">
-                        </div>
+                    <input type="hidden" id="usu_codigo_pais" value="+51">
+                </div>
 
                 {{-- Datos autogenerados --}}
                 <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:12px;padding:14px 18px;margin-bottom:6px">
@@ -175,6 +178,13 @@
 
 
 <script>
+// Función para evitar la escritura de números en campos de texto
+function soloLetras(e) {
+    const tecla = e.key;
+    // Permite letras minusculas, mayusculas, acentos, la ñ y espacios
+    return /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]$/.test(tecla) || tecla === 'Backspace' || tecla === 'Tab';
+}
+
 // ── Inicializar intlTelInput ──────────────────────────────────────────
 let _usuPhoneInput = null;
 
@@ -341,14 +351,21 @@ async function guardarUsuario() {
     const tel = document.getElementById('usu_telefono').value.trim();
     const cp  = document.getElementById('usu_codigo_pais').value.trim();
 
-    // ── Validaciones ──────────────────────────────────────────────────────
+    // ── Validaciones de longitud en JS antes del envío ──────────────────────
     const errores = [];
-    if (!n)                    errores.push('El nombre es obligatorio.');
-    if (!ap)                   errores.push('El apellido paterno es obligatorio.');
-    if (!am)                   errores.push('El apellido materno es obligatorio.');
-    if (!dni)                  errores.push('El DNI es obligatorio.');
-    else if (dni.length !== 8) errores.push('El DNI debe tener 8 dígitos.');
-    if (!tel)                  errores.push('El teléfono es obligatorio.');
+    if (!n)                           errores.push('El nombre es obligatorio.');
+    else if (n.length > 100)          errores.push('El nombre no puede superar los 100 caracteres.');
+    
+    if (!ap)                          errores.push('El apellido paterno es obligatorio.');
+    else if (ap.length > 100)         errores.push('El apellido paterno no puede superar los 100 caracteres.');
+    
+    if (!am)                          errores.push('El apellido materno es obligatorio.');
+    else if (am.length > 100)         errores.push('El apellido materno no puede superar los 100 caracteres.');
+    
+    if (!dni)                         errores.push('El documento es obligatorio.');
+    else if (dni.length > 15)         errores.push('El documento no puede superar los 15 dígitos.');
+    
+    if (!tel)                         errores.push('El teléfono es obligatorio.');
 
     if (errores.length > 0) {
         errores.forEach(e => showNotification('danger', 'Error', e));

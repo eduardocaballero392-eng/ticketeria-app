@@ -421,6 +421,11 @@ function secHide(id) {
     if (el) el.style.display = 'none';
 }
 
+function cerrarPanelEdicion() {
+    const panel = document.getElementById('dtk-panel-edicion');
+    if (panel) panel.style.display = 'none';
+}
+
 function dtkFill(id, valor) {
     const el = document.getElementById(id);
     if (!el) return;

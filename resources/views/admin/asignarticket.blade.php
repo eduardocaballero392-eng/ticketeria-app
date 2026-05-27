@@ -1,3 +1,4 @@
+@include('components.admin.navbar-admin')
 @include('components.admin.sidebar-admin')
 @include('components.admin.modalcreartecnico')
 @include('components.admin.modalcrearcliente')
