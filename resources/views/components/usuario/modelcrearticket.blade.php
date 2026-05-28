@@ -150,9 +150,7 @@
 @include('components.notificaciones.alertas')
 
 {{-- ══ MODAL ══ --}}
-<div id="modalCrearTicket"
-
-    style="display:none;position:fixed;inset:0;background:rgba(10,37,80,.55);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center;padding:16px;">
+<div id="modalCrearTicket" style="display:none;position:fixed;inset:0;background:rgba(10,37,80,.55);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center;padding:16px;">
     <div class="mc-card" onclick="event.stopPropagation()">
 
         {{-- Cabecera --}}
@@ -168,38 +166,20 @@
         <div class="mc-body">
 
             {{-- Tipo de ticket --}}
-<div class="mc-field">
-    <label class="mc-label">Tipo de ticket</label>
+            <div class="mc-field">
+                <label class="mc-label">Tipo de ticket</label>
+                <select id="t_tipo" class="mc-input" onchange="mostrarDescripcionTipoTicket()">
+                    <option value="">— Selecciona un tipo —</option>
+                    @foreach(\DB::table('tipo_ticket')->where('activo', 1)->get() as $tipo)
+                        <option value="{{ $tipo->id_tipo_ticket }}" data-descripcion="{{ $tipo->descripcion }}">
+                            {{ $tipo->nombre }}
+                        </option>
+                    @endforeach
+                </select>
 
-    <select id="t_tipo" class="mc-input" onchange="mostrarDescripcionTipoTicket()">
-        <option value="">— Selecciona un tipo —</option>
-
-        @foreach(\DB::table('tipo_ticket')->where('activo', 1)->get() as $tipo)
-            <option
-                value="{{ $tipo->id_tipo_ticket }}"
-                data-descripcion="{{ $tipo->descripcion }}"
-            >
-                {{ $tipo->nombre }}
-            </option>
-        @endforeach
-    </select>
-
-    {{-- Descripción del tipo seleccionado --}}
-    <div
-        id="descripcionTipoTicket"
-        style="
-            display:none;
-            margin-top:8px;
-            padding:10px 12px;
-            background:#eef5ff;
-            border:1px solid #c8dcf5;
-            border-radius:10px;
-            font-size:12px;
-            color:#3a6499;
-            line-height:1.5;
-        "
-    ></div>
-</div>
+                {{-- Descripción del tipo seleccionado --}}
+                <div id="descripcionTipoTicket" style="display:none;margin-top:8px;padding:10px 12px;background:#eef5ff;border:1px solid #c8dcf5;border-radius:10px;font-size:12px;color:#3a6499;line-height:1.5;"></div>
+            </div>
 
             {{-- Prioridad --}}
             <div class="mc-field">
@@ -207,9 +187,7 @@
                 <div id="prioridadGroup">
                     @foreach(\DB::table('prioridad')->orderBy('nivel')->get() as $p)
                     <label id="prio-label-{{ $p->id_prioridad }}">
-                        <input type="radio" name="t_prioridad" value="{{ $p->id_prioridad }}"
-                            onchange="seleccionarPrioridad({{ $p->id_prioridad }}, '{{ $p->color_hex }}')"
-                            style="display:none;">
+                        <input type="radio" name="t_prioridad" value="{{ $p->id_prioridad }}" onchange="seleccionarPrioridad({{ $p->id_prioridad }}, '{{ $p->color_hex }}')" style="display:none;">
                         <span style="font-size:13px;font-weight:700;color:{{ $p->color_hex }};">{{ $p->nombre }}</span>
                         <span style="font-size:11px;color:#5a82b0;line-height:1.4;">{{ $p->descripcion }}</span>
                     </label>
@@ -220,8 +198,7 @@
             {{-- Asunto --}}
             <div class="mc-field">
                 <label class="mc-label">Asunto</label>
-                <input type="text" id="t_asunto" class="mc-input"
-                    placeholder="Ej: Computadora no enciende">
+                <input type="text" id="t_asunto" class="mc-input" placeholder="Ej: Computadora no enciende">
             </div>
 
             {{-- Descripción --}}
@@ -229,8 +206,7 @@
                 <label class="mc-label">
                     Descripción del problema <span class="req">*</span>
                 </label>
-                <textarea id="t_problema" class="mc-input" rows="4"
-                    placeholder="Describe detalladamente el problema..."></textarea>
+                <textarea id="t_problema" class="mc-input" rows="4" placeholder="Describe detalladamente el problema..."></textarea>
             </div>
 
             {{-- Equipo --}}
@@ -265,8 +241,7 @@
                     <div style="font-size:32px;margin-bottom:8px;">📎</div>
                     <div id="dropLabel">Haz clic o arrastra tu archivo aquí</div>
                 </div>
-                <input type="file" id="t_evidencia" accept=".jpg,.jpeg,.png,.pdf,.mp4,.mov"
-                    onchange="mostrarArchivo(this)" multiple style="display:none;">
+                <input type="file" id="t_evidencia" accept=".jpg,.jpeg,.png,.pdf,.mp4,.mov" onchange="mostrarArchivo(this)" multiple style="display:none;">
             </div>
 
             {{-- Botones --}}
@@ -307,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────
     window.cerrarModalTicket = function () {
         const modal = document.getElementById('modalCrearTicket');
-
         if (modal) {
             modal.style.display = 'none';
         }
@@ -326,9 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('t_serie').value = '';
         document.getElementById('t_evidencia').value = '';
 
-        document.getElementById('dropLabel').textContent =
-            'Haz clic o arrastra tu archivo aquí';
-
+        document.getElementById('dropLabel').textContent = 'Haz clic o arrastra tu archivo aquí';
         document.getElementById('dropZone').style.borderColor = '#aacbee';
         document.getElementById('dropZone').style.background = '#f7faff';
 
@@ -358,11 +330,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         const label = document.getElementById('prio-label-' + id);
-
         if (label) {
             label.style.borderColor = color;
             label.style.background = color + '15';
             label.style.boxShadow = '0 0 0 3px ' + color + '22';
+        }
+    };
+
+    // ─────────────────────────────────────────────
+    // Mostrar descripción del tipo de ticket (Movida aquí adentro para estabilidad)
+    // ─────────────────────────────────────────────
+    window.mostrarDescripcionTipoTicket = function () {
+        const select = document.getElementById('t_tipo');
+        const descripcionBox = document.getElementById('descripcionTipoTicket');
+
+        if (!select || !descripcionBox) return;
+
+        const opcionSeleccionada = select.options[select.selectedIndex];
+        const descripcion = opcionSeleccionada.getAttribute('data-descripcion');
+
+        if (descripcion && descripcion.trim() !== '') {
+            descripcionBox.style.display = 'block';
+            descripcionBox.innerHTML = 'ℹ️ ' + descripcion;
+        } else {
+            descripcionBox.style.display = 'none';
+            descripcionBox.innerHTML = '';
         }
     };
 
@@ -388,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ─────────────────────────────────────────────
     window.handleDrop = function (event) {
         event.preventDefault();
-
         const input = document.getElementById('t_evidencia');
         const dt = new DataTransfer();
 
@@ -403,173 +394,97 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('dropZone').style.background = '#f7faff';
     };
 
-// ─────────────────────────────────────────────
-// Enviar ticket
-// ─────────────────────────────────────────────
-window.enviarTicket = async function () {
-    const tipoTicket = document.getElementById('t_tipo').value;
-    const problema   = document.getElementById('t_problema').value.trim();
-    const archivos   = document.getElementById('t_evidencia').files;
+    // ─────────────────────────────────────────────
+    // Enviar ticket
+    // ─────────────────────────────────────────────
+    window.enviarTicket = async function () {
+        const tipoTicket = document.getElementById('t_tipo').value;
+        const problema   = document.getElementById('t_problema').value.trim();
+        const archivos   = document.getElementById('t_evidencia').files;
 
-    // ── Validaciones obligatorias ──
-    if (!tipoTicket) {
-        showNotification(
-            'warning',
-            'Campo requerido',
-            'Debes seleccionar un tipo de ticket.'
-        );
-        return;
-    }
-
-    if (!prioridadSeleccionada) {
-        showNotification(
-            'warning',
-            'Campo requerido',
-            'Debes seleccionar una prioridad.'
-        );
-        return;
-    }
-
-    if (!problema) {
-        showNotification(
-            'warning',
-            'Campo requerido',
-            'La descripción del problema es obligatoria.'
-        );
-        return;
-    }
-
-    // Evidencia obligatoria
-    if (archivos.length === 0) {
-        showNotification(
-            'warning',
-            'Campo requerido',
-            'Debes adjuntar al menos una evidencia.'
-        );
-        return;
-    }
-
-    // Máximo 5 archivos
-    if (archivos.length > 5) {
-        showNotification(
-            'warning',
-            'Límite excedido',
-            'Máximo 5 archivos de evidencia permitidos.'
-        );
-        return;
-    }
-
-    const btn = document.getElementById('btnEnviarTicket');
-
-    btn.disabled = true;
-    btn.style.opacity = '.7';
-    btn.style.cursor = 'not-allowed';
-    btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:8px;">
-        <svg style="animation:mcSpin 1s linear infinite"
-             width="14"
-             height="14"
-             viewBox="0 0 24 24"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="2.5">
-            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-        </svg>
-        Subiendo archivo...
-    </span>`;
-
-    const formData = new FormData();
-
-    // Obligatorios
-    formData.append('id_tipo_ticket', tipoTicket);
-    formData.append('id_prioridad', prioridadSeleccionada);
-    formData.append('problema', problema);
-
-    // Opcionales
-    formData.append('asunto', document.getElementById('t_asunto').value.trim());
-    formData.append('tipo_equipo', document.getElementById('t_tipo_equipo').value.trim());
-    formData.append('marca', document.getElementById('t_marca').value.trim());
-    formData.append('modelo', document.getElementById('t_modelo').value.trim());
-    formData.append('serie_serial', document.getElementById('t_serie').value.trim());
-
-    // CSRF
-    formData.append('_token', '{{ csrf_token() }}');
-
-    // Evidencias
-    Array.from(archivos).forEach(archivo => {
-        formData.append('evidencia[]', archivo);
-    });
-
-    try {
-        const res = await fetch('{{ route("usuario.ticket.store") }}', {
-            method: 'POST',
-            body: formData
-        });
-
-        // Si Laravel devuelve error 422 o cualquier HTML
-        // evitamos el "Error de conexión"
-        const data = await res.json();
-
-        if (data.ok) {
-            cerrarModalTicket();
-
-            ModalSystem.show('success', {
-                title: '¡Ticket creado!',
-                text: data.message || 'El ticket fue registrado correctamente.',
-                confirmText: 'Entendido'
-            });
-
-            const observer = new MutationObserver(() => {
-                const modal = document.querySelector('.modal-system-overlay');
-
-                if (!modal) {
-                    observer.disconnect();
-                    location.reload();
-                }
-            });
-
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-        } else {
-            showNotification(
-                'danger',
-                'Error',
-                data.message || 'No se pudo crear el ticket.'
-            );
+        if (!tipoTicket) {
+            showNotification('warning', 'Campo requerido', 'Debes seleccionar un tipo de ticket.');
+            return;
+        }
+        if (!prioridadSeleccionada) {
+            showNotification('warning', 'Campo requerido', 'Debes seleccionar una prioridad.');
+            return;
+        }
+        if (!problema) {
+            showNotification('warning', 'Campo requerido', 'La descripción del problema es obligatoria.');
+            return;
+        }
+        if (archivos.length === 0) {
+            showNotification('warning', 'Campo requerido', 'Debes adjuntar al menos una evidencia.');
+            return;
+        }
+        if (archivos.length > 5) {
+            showNotification('warning', 'Límite excedido', 'Máximo 5 archivos de evidencia permitidos.');
+            return;
         }
 
-    } catch (error) {
-        showNotification(
-            'danger',
-            'Error de conexión',
-            'No se pudo conectar con el servidor.'
-        );
-    } finally {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
-        btn.innerHTML = '🎫 Crear ticket';
-    }
-};
+        const btn = document.getElementById('btnEnviarTicket');
+        btn.disabled = true;
+        btn.style.opacity = '.7';
+        btn.style.cursor = 'not-allowed';
+        btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:8px;">
+            <svg style="animation:mcSpin 1s linear infinite" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+            Subiendo archivo...
+        </span>`;
+
+        const formData = new FormData();
+        formData.append('id_tipo_ticket', tipoTicket);
+        formData.append('id_prioridad', prioridadSeleccionada);
+        formData.append('problema', problema);
+        formData.append('asunto', document.getElementById('t_asunto').value.trim());
+        formData.append('tipo_equipo', document.getElementById('t_tipo_equipo').value.trim());
+        formData.append('marca', document.getElementById('t_marca').value.trim());
+        formData.append('modelo', document.getElementById('t_modelo').value.trim());
+        formData.append('serie_serial', document.getElementById('t_serie').value.trim());
+        formData.append('_token', '{{ csrf_token() }}');
+
+        Array.from(archivos).forEach(archivo => {
+            formData.append('evidencia[]', archivo);
+        });
+
+        try {
+            const res = await fetch('{{ route("usuario.ticket.store") }}', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+
+            if (data.ok) {
+                cerrarModalTicket();
+                ModalSystem.show('success', {
+                    title: '¡Ticket creado!',
+                    text: data.message || 'El ticket fue registrado correctamente.',
+                    confirmText: 'Entendido'
+                });
+
+                const observer = new MutationObserver(() => {
+                    const modal = document.querySelector('.modal-system-overlay');
+                    if (!modal) {
+                        observer.disconnect();
+                        location.reload();
+                    }
+                });
+
+                observer.observe(document.body, { childList: true, subtree: true });
+            } else {
+                showNotification('danger', 'Error', data.message || 'No se pudo crear el ticket.');
+            }
+        } catch (error) {
+            showNotification('danger', 'Error de conexión', 'No se pudo conectar con el servidor.');
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.innerHTML = '🎫 Crear ticket';
+        }
+    };
 });
-
-// ─────────────────────────────────────────────
-// Mostrar descripción del tipo de ticket
-// ─────────────────────────────────────────────
-window.mostrarDescripcionTipoTicket = function () {
-    const select = document.getElementById('t_tipo');
-    const descripcionBox = document.getElementById('descripcionTipoTicket');
-
-    const opcionSeleccionada = select.options[select.selectedIndex];
-    const descripcion = opcionSeleccionada.getAttribute('data-descripcion');
-
-    if (descripcion && descripcion.trim() !== '') {
-        descripcionBox.style.display = 'block';
-        descripcionBox.innerHTML = 'ℹ️ ' + descripcion;
-    } else {
-        descripcionBox.style.display = 'none';
-        descripcionBox.innerHTML = '';
-    }
-};
 </script>

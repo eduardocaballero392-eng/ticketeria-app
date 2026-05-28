@@ -42,6 +42,9 @@ Route::prefix('cliente')->name('cliente.')->group(function () {
 // ===================== 2. ADMIN =====================
 Route::prefix('admin')->name('admin.')->group(function () {
 
+    // Toggle estado (activar/desactivar)
+    Route::post('/{tipo}/{id}/toggle', [AdminController::class, 'toggleEstado']);
+
     Route::get('/dashboard',     [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/datos',         [AdminController::class, 'datos'])->name('datos');
     Route::post('/datos/update', [AdminController::class, 'update'])->name('update');
@@ -74,7 +77,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/ticket/{id}/comentario',    [AdminController::class, 'agregarComentario'])->name('ticket.comentario');
     Route::post('/ticket/{id}/reporte',       [AdminController::class, 'subirReporte'])->name('ticket.reporte');
     Route::post('/ticket/{id}/cerrar',        [AdminController::class, 'cerrarTicket'])->name('ticket.cerrar');
-
 });
 
 // ===================== 3. TECNICO =====================
