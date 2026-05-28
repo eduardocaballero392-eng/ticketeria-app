@@ -68,7 +68,7 @@ class AdminController extends Controller
 
         $tecnicos = Tecnico::where('activo', 1)->orderBy('nombre')->get();
         $usuarios_lista = Usuario::orderBy('nombre')->get();
-        $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+        $clientes = Cliente::orderBy('razon_social')->get();
 
         $resumen = [
             'total'      => $tickets->count(),
@@ -170,7 +170,10 @@ class AdminController extends Controller
 
     public function cambiarEstadoTecnico(Request $request, $id)
     {
-        DB::table('users')->where('id_usuario', $id)->update(['activo' => $request->estado]);
+        DB::table('tecnico')->where('id_tecnico', $id)->update([
+            'activo' => $request->estado, 
+            'updated_at' => now()
+        ]);
         return response()->json(['ok' => true]);
     }
 
@@ -638,7 +641,19 @@ class AdminController extends Controller
         ]);
         return response()->json(['ok' => true]);
     }
-
+    
+    public function toggleEstado(Request $request, $tipo, $id) {
+        $tablas = ['cliente'=>'cliente','usuario'=>'usuario','tecnico'=>'tecnico'];
+        $llaves = ['cliente'=>'id_cliente','usuario'=>'id_usuario','tecnico'=>'id_tecnico'];
+        
+        if (!isset($tablas[$tipo])) return response()->json(['ok'=>false], 400);
+        
+        DB::table($tablas[$tipo])->where($llaves[$tipo], $id)
+            ->update(['activo' => $request->activo, 'updated_at'=>now()]);
+        
+        return response()->json(['ok'=>true]);
+    }
+    
     public function editarUsuario(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -1006,7 +1021,7 @@ class AdminController extends Controller
             return redirect('/')->with('error', 'Acceso restringido.');
         }
 
-        $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+        $clientes = Cliente::orderBy('razon_social')->get();
         $usuarios = Usuario::with('cliente')->orderBy('nombre')->get();
 
         return view('admin.contactos', compact('clientes', 'usuarios'));
@@ -1065,7 +1080,7 @@ public function clientes()
     $usuarios_lista = Usuario::orderBy('nombre')->get();
     
     // Clientes
-    $clientes = Cliente::where('activo', 1)->orderBy('razon_social')->get();
+    $clientes = Cliente::orderBy('razon_social')->get();
 
     // Contadores resumen
     $resumen = [

@@ -234,7 +234,6 @@ function abrirDetalleInteligente(id, estado) {
         }
     }
 }
-
 </script>
 
 <style>
