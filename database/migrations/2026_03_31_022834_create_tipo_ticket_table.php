@@ -12,18 +12,46 @@ return new class extends Migration
         Schema::create('tipo_ticket', function (Blueprint $table) {
             $table->id('id_tipo_ticket');
             $table->string('nombre', 100);
-            $table->string('prefijo', 20)->unique();   // Ej: IMAC, VIVO, SERV, TICK
-            $table->string('descripcion', 200)->nullable();
+            $table->string('prefijo', 20)->unique();
+            $table->text('descripcion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
 
         // ── Datos iniciales ──────────────────────────────────
         DB::table('tipo_ticket')->insert([
-            ['nombre' => 'IMAC - Requerimiento', 'prefijo' => 'IMAC', 'descripcion' => 'Instalación, Movimiento, Adición o Cambio de equipo', 'activo' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'VIVO - Mantenimiento', 'prefijo' => 'VIVO', 'descripcion' => 'Mantenimiento preventivo o correctivo', 'activo' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'SERVICIO - Solicitud',  'prefijo' => 'SERV', 'descripcion' => 'Solicitud de servicio o recurso TI', 'activo' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'TICKET - Incidencia',   'prefijo' => 'TICK', 'descripcion' => 'Incidencia que interrumpe el servicio normal', 'activo' => true, 'created_at' => now(), 'updated_at' => now()],
+            [
+                'nombre' => 'Soporte Técnico General (PC, Laptop, Mac, Móviles)',
+                'prefijo' => 'SOP',
+                'descripcion' => 'Mantenimiento preventivo/correctivo, optimización drástica de rendimiento, formateo con respaldo, solución de hardware/software y soporte multimarca especializado (incluye Apple e iOS/macOS).',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre' => 'Instalación de Redes y Wi-Fi',
+                'prefijo' => 'RED',
+                'descripcion' => 'Diseño e implementación de cableado estructurado, ampliación de cobertura inalámbrica, configuración profesional de routers, switches, repetidores y optimización de conectividad.',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre' => 'Cámaras de Seguridad',
+                'prefijo' => 'CAM',
+                'descripcion' => 'Venta, diseño de planos de cobertura, cableado estructurado, montaje de cámaras fijas/PTZ, configuración de grabadores DVR/NVR y puesta en marcha del sistema de videovigilancia local y remoto.',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre' => 'Recuperación de Datos',
+                'prefijo' => 'REC',
+                'descripcion' => 'Asistencia técnica de emergencia para el rescate, diagnóstico y recuperación de archivos, fotos, documentos o bases de datos dañadas o eliminadas.',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 
@@ -31,4 +59,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('tipo_ticket');
     }
-};  
+};
