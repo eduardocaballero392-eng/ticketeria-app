@@ -187,7 +187,7 @@ function mtRender() {
     </div>
 
     <div class="mt-card-footer">
-        <button class="mt-btn-detalle" onclick="abrirModalEdicion(${t.id_ticket})">
+        <button class="mt-btn-detalle" onclick="abrirDetalleInteligente(${t.id_ticket}, '${t.estado}')">
             👁 Ver detalle
         </button>
     </div>
@@ -214,6 +214,27 @@ document.addEventListener('DOMContentLoaded', mtRender);
 
 // ── stub requerido por detalleticket.blade.php del admin ─────────
 function cerrarPanelEdicion() {}
+
+function abrirDetalleInteligente(id, estado) {
+    const estadosFinales = ['CERRADO', 'CANCELADO'];
+    
+    if (estadosFinales.includes(estado)) {
+        // Si está cerrado/cancelado → usar modal de solo lectura
+        if (typeof abrirDetalleTicket === 'function') {
+            abrirDetalleTicket(id);
+        } else {
+            window.location.href = `/admin/ticket/${id}/detalle`;
+        }
+    } else {
+        // Si está activo → usar modal editable
+        if (typeof abrirModalEdicion === 'function') {
+            abrirModalEdicion(id);
+        } else {
+            window.location.href = `/admin/ticket/${id}/detalle`;
+        }
+    }
+}
+
 </script>
 
 <style>
