@@ -316,8 +316,17 @@
   border: 1px solid var(--erp-border);
   border-radius: var(--erp-radius);
   box-shadow: var(--erp-shadow);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
+
+.erp-table td:last-child {
+  white-space: nowrap; /* Evita que los botones salten de línea */
+}
+.row-actions {
+  flex-wrap: nowrap; /* Fuerza a los botones a mantenerse en una línea */
+}
+
 .erp-table               { width: 100%; border-collapse: collapse; }
 .erp-table thead         { background: #f8fafc; border-bottom: 2px solid var(--erp-border); }
 .erp-table th {
@@ -703,7 +712,7 @@
 
         {{-- ── CLIENTES ──────────────────────────────────────────────── --}}
         @foreach($clientes as $cliente)
-        <tr data-type="cliente" data-status="{{ $cliente->activo ? 'activo' : 'inactivo' }}">
+        <tr data-type="cliente" data-id="{{ $cliente->id_cliente }}" data-status="{{ $cliente->activo ? 'activo' : 'inactivo' }}">
           <td class="cell-id">#{{ $cliente->id_cliente }}</td>
           <td>
             <span class="type-badge tb-c">
@@ -751,7 +760,7 @@
 
         {{-- ── USUARIOS ──────────────────────────────────────────────── --}}
         @foreach($usuarios_lista as $u)
-        <tr data-type="usuario" data-status="{{ $u->activo ? 'activo' : 'inactivo' }}">
+        <tr data-type="usuario" data-id="{{ $u->id_usuario }}" data-status="{{ $u->activo ? 'activo' : 'inactivo' }}">
           <td class="cell-id">#{{ $u->id_usuario }}</td>
           <td>
             <span class="type-badge tb-u">
@@ -799,7 +808,7 @@
 
         {{-- ── TÉCNICOS ───────────────────────────────────────────────── --}}
         @foreach($tecnicos as $t)
-        <tr data-type="tecnico" data-status="{{ $t->activo ? 'activo' : 'inactivo' }}">
+        <tr data-type="tecnico" data-id="{{ $t->id_tecnico }}" data-status="{{ $t->activo ? 'activo' : 'inactivo' }}">
           <td class="cell-id">#{{ $t->id_tecnico }}</td>
           <td>
             <span class="type-badge tb-t">
@@ -992,7 +1001,6 @@ function verDetalleTecnico(id) { abrirDetalle('tecnico',  id); }
 async function toggleEstado(tipo, id, nuevoEstado) {
   const url    = `/admin/${tipo}/${id}/toggle`;
   const accion = nuevoEstado ? 'activar' : 'desactivar';
-  console.log('Enviando a:', url);
 
   ModalSystem.show('question', {
     title:       `${nuevoEstado ? 'Activar' : 'Desactivar'} ${tipo}?`,
@@ -1010,16 +1018,35 @@ async function toggleEstado(tipo, id, nuevoEstado) {
           },
           body: JSON.stringify({ activo: nuevoEstado ? 1 : 0 })
         });
-
         const data = await res.json();
 
         if (data.ok) {
-          showNotification(
-            'success',
-            '¡Éxito!',
-            `${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${nuevoEstado ? 'activado' : 'desactivado'} correctamente.`
-          );
-          setTimeout(() => location.reload(), 800);
+          showNotification('success', '¡Éxito!', `${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${nuevoEstado ? 'activado' : 'desactivado'} correctamente.`);
+
+          // 🔍 ACTUALIZACIÓN EN VIVO (sin recargar la página)
+          const fila = document.querySelector(`tr[data-type="${tipo}"][data-id="${id}"]`);
+          if (fila) {
+            fila.setAttribute('data-status', nuevoEstado ? 'activo' : 'inactivo');
+
+            // Actualizar badge de estado (columna 7)
+            const badge = fila.querySelector('td:nth-child(7)');
+            const statusText = nuevoEstado ? 'Activo' : (tipo === 'cliente' ? 'Inactivo' : 'Bloqueado');
+            badge.innerHTML = `<span class="${nuevoEstado ? 'badge-active' : 'badge-inactive'}"><span class="bdot"></span>${statusText}</span>`;
+
+            // Actualizar botón de acción (columna 8)
+            const btn = fila.querySelector('td:nth-child(8) .btn-action-sm:last-child');
+            if (btn) {
+              const nuevoLabel = nuevoEstado ? (tipo === 'usuario' ? 'Bloquear' : (tipo === 'tecnico' ? 'Dar baja' : 'Suspender')) : 'Activar';
+              btn.className = `btn-action-sm ${nuevoEstado ? 'btn-deactivate' : 'btn-activate'}`;
+              btn.setAttribute('onclick', `toggleEstado('${tipo}', ${id}, ${nuevoEstado ? 0 : 1})`);
+              btn.innerHTML = `
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18.36 6.64a9 9 0 11-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>
+                </svg>
+                ${nuevoLabel}
+              `;
+            }
+          }
         } else {
           showNotification('danger', 'Error', data.message || `No se pudo ${accion} el ${tipo}.`);
         }

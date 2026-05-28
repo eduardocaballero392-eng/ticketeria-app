@@ -66,7 +66,7 @@ class AdminController extends Controller
             $ticket->reportes    = $reportes->get($ticket->id_ticket, collect());
         });
 
-        $tecnicos = Tecnico::where('activo', 1)->orderBy('nombre')->get();
+        $tecnicos = Tecnico::orderBy('nombre')->get();
         $usuarios_lista = Usuario::orderBy('nombre')->get();
         $clientes = Cliente::orderBy('razon_social')->get();
 
@@ -1074,7 +1074,7 @@ public function clientes()
     });
 
     // Técnicos disponibles
-    $tecnicos = Tecnico::where('activo', 1)->orderBy('nombre')->get();
+    $tecnicos = Tecnico::orderBy('nombre')->get();
     
     // Usuarios
     $usuarios_lista = Usuario::orderBy('nombre')->get();
