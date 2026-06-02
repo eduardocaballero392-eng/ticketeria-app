@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tickets_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      APP_NAME: "Sistema de Tickets"
+      APP_ENV: local
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: sistema_tickets
+      DB_USERNAME: tickets_user
+      DB_PASSWORD: tickets_pass
+      CACHE_DRIVER: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: ${MAIL_MAILER:-smtp}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: tls
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@example.com}
+      MAIL_FROM_NAME: "Sistema de Tickets"
+    volumes:
+      - app_storage:/var/www/html/storage/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - tickets_network
+
+  db:
+    image: postgres:16-alpine
+    container_name: tickets_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sistema_tickets
+      POSTGRES_USER: tickets_user
+      POSTGRES_PASSWORD: tickets_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickets_user -d sistema_tickets"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tickets_network
+
+volumes:
+  db_data:
+  app_storage:
+
+networks:
+  tickets_network:
+    driver: bridge

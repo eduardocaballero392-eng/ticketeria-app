@@ -64,3 +64,35 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## Despliegue
+
+### Local con Docker
+
+```bash
+# 1. Construir e iniciar los contenedores (app + PostgreSQL)
+docker-compose up -d --build
+
+# 2. La app estará en http://localhost:8000
+```
+
+El entrypoint corre automáticamente: `config:cache`, `route:cache`, `view:cache` y `migrate --force`.
+
+### Render (Producción)
+
+El repositorio incluye `render.yaml` que configura automáticamente:
+- **Web Service** con Docker (desde la raíz, sin subdirectorio `backend`)
+- **PostgreSQL** gratuito enlazado al servicio
+
+**Pasos:**
+1. Push al repositorio en GitHub/GitLab
+2. En [render.com](https://render.com) → New → Blueprint → selecciona el repo
+3. Render detecta el `render.yaml` y crea los servicios
+4. En el dashboard del servicio, agrega las variables de correo manualmente:
+   - `MAIL_USERNAME`
+   - `MAIL_PASSWORD`
+   - `MAIL_FROM_ADDRESS`
+
+**Variables inyectadas automáticamente por Render:** `APP_KEY`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.

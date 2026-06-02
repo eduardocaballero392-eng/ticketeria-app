@@ -1,0 +1,73 @@
+services:
+  # ── Web Service (Laravel App) ──────────────────────────────────────────────
+  - type: web
+    name: ticketeria-app
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # Root directory: leave blank (app is at repo root, not in /backend)
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: "Sistema de Tickets"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        fromService:
+          type: web
+          name: ticketeria-app
+          property: host
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: ticketeria-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: ticketeria-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: ticketeria-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: ticketeria-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: ticketeria-db
+          property: password
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+      # Mail — set these manually in the Render dashboard
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_NAME
+        value: "Sistema de Tickets"
+      # MAIL_USERNAME, MAIL_PASSWORD, MAIL_FROM_ADDRESS → add in dashboard
+
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+databases:
+  - name: ticketeria-db
+    databaseName: sistema_tickets
+    plan: free
