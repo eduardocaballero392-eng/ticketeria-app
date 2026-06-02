@@ -47,7 +47,7 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 COPY . .
 
 # Install Node dependencies and build assets
-RUN npm ci && npm run build && rm -rf node_modules
+RUN npm install && npm run build && rm -rf node_modules
 
 # Run composer scripts now that full app is present
 RUN composer dump-autoload --optimize
