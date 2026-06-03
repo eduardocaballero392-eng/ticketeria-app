@@ -2,59 +2,74 @@
 set -e
 
 echo "==> Laravel startup"
-
 cd /var/www/html
 
-# Parsear DATABASE_URL si las vars individuales están vacías
+# ── 1. Parsear DATABASE_URL si las vars individuales no vienen ──────────────
 if [ -n "$DATABASE_URL" ] && [ -z "$DB_HOST" ]; then
     echo "==> Parsing DATABASE_URL..."
     DB_HOST=$(echo "$DATABASE_URL"     | sed -E 's|.*@([^:/]+).*|\1|')
-    DB_PORT=$(echo "$DATABASE_URL"     | sed -E 's|.*:([0-9]+)/[^/].*|\1|')
+    DB_PORT=$(echo "$DATABASE_URL"     | sed -E 's|.*:([0-9]+)/[^/?].*|\1|')
     DB_DATABASE=$(echo "$DATABASE_URL" | sed -E 's|.*/([^?]+)(\?.*)?$|\1|')
-    DB_USERNAME=$(echo "$DATABASE_URL" | sed -E 's|.*://([^:]+):.*|\1|')
-    DB_PASSWORD=$(echo "$DATABASE_URL" | sed -E 's|.*://[^:]+:([^@]+)@.*|\1|')
+    DB_USERNAME=$(echo "$DATABASE_URL" | sed -E 's|[a-z]+://([^:]+):.*|\1|')
+    DB_PASSWORD=$(echo "$DATABASE_URL" | sed -E 's|[a-z]+://[^:]+:([^@]+)@.*|\1|')
     DB_SSLMODE=require
-    echo "==> HOST=${DB_HOST} PORT=${DB_PORT} DB=${DB_DATABASE}"
+    echo "==> HOST=${DB_HOST} PORT=${DB_PORT} DB=${DB_DATABASE} USER=${DB_USERNAME}"
 fi
 
-# Escribir .env con todos los valores correctos para que Apache/PHP los lean
-cat > /var/www/html/.env << ENVEOF
-APP_NAME="${APP_NAME:-Sistema de Tickets}"
-APP_ENV=${APP_ENV:-production}
-APP_KEY=${APP_KEY}
-APP_DEBUG=${APP_DEBUG:-false}
-APP_URL=${APP_URL:-http://localhost}
+# ── 2. Escribir .env con Python para manejar caracteres especiales ──────────
+python3 - <<PYEOF
+import os
 
-LOG_CHANNEL=stderr
-LOG_LEVEL=${LOG_LEVEL:-error}
+env_vars = {
+    "APP_NAME":       os.environ.get("APP_NAME", "Sistema de Tickets"),
+    "APP_ENV":        os.environ.get("APP_ENV", "production"),
+    "APP_KEY":        os.environ.get("APP_KEY", ""),
+    "APP_DEBUG":      os.environ.get("APP_DEBUG", "true"),
+    "APP_URL":        os.environ.get("APP_URL", "http://localhost"),
+    "LOG_CHANNEL":    "stderr",
+    "LOG_LEVEL":      os.environ.get("LOG_LEVEL", "debug"),
+    "DB_CONNECTION":  "pgsql",
+    "DB_HOST":        os.environ.get("DB_HOST", ""),
+    "DB_PORT":        os.environ.get("DB_PORT", "5432"),
+    "DB_DATABASE":    os.environ.get("DB_DATABASE", ""),
+    "DB_USERNAME":    os.environ.get("DB_USERNAME", ""),
+    "DB_PASSWORD":    os.environ.get("DB_PASSWORD", ""),
+    "DB_SSLMODE":     os.environ.get("DB_SSLMODE", "require"),
+    "CACHE_DRIVER":   os.environ.get("CACHE_DRIVER", "file"),
+    "SESSION_DRIVER": os.environ.get("SESSION_DRIVER", "file"),
+    "QUEUE_CONNECTION": os.environ.get("QUEUE_CONNECTION", "sync"),
+    "FILESYSTEM_DISK":  "local",
+    "MAIL_MAILER":      os.environ.get("MAIL_MAILER", "smtp"),
+    "MAIL_HOST":        os.environ.get("MAIL_HOST", "smtp.gmail.com"),
+    "MAIL_PORT":        os.environ.get("MAIL_PORT", "587"),
+    "MAIL_USERNAME":    os.environ.get("MAIL_USERNAME", ""),
+    "MAIL_PASSWORD":    os.environ.get("MAIL_PASSWORD", ""),
+    "MAIL_ENCRYPTION":  "tls",
+    "MAIL_FROM_ADDRESS": os.environ.get("MAIL_FROM_ADDRESS", ""),
+    "MAIL_FROM_NAME":   os.environ.get("MAIL_FROM_NAME", "Sistema de Tickets"),
+}
 
-DB_CONNECTION=pgsql
-DB_HOST=${DB_HOST}
-DB_PORT=${DB_PORT:-5432}
-DB_DATABASE=${DB_DATABASE}
-DB_USERNAME=${DB_USERNAME}
-DB_PASSWORD=${DB_PASSWORD}
-DB_SSLMODE=${DB_SSLMODE:-require}
+lines = []
+for k, v in env_vars.items():
+    # Wrap in quotes if value has spaces or special chars
+    if any(c in v for c in [' ', '#', '"', "'"]):
+        v = '"' + v.replace('"', '\\"') + '"'
+    lines.append(f"{k}={v}")
 
-CACHE_DRIVER=${CACHE_DRIVER:-file}
-SESSION_DRIVER=${SESSION_DRIVER:-file}
-QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
-FILESYSTEM_DISK=local
+with open("/var/www/html/.env", "w") as f:
+    f.write("\n".join(lines) + "\n")
 
-MAIL_MAILER=${MAIL_MAILER:-smtp}
-MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
-MAIL_PORT=${MAIL_PORT:-587}
-MAIL_USERNAME=${MAIL_USERNAME}
-MAIL_PASSWORD=${MAIL_PASSWORD}
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
-MAIL_FROM_NAME="${MAIL_FROM_NAME:-Sistema de Tickets}"
-ENVEOF
+print("==> .env written successfully")
+print(f"    APP_KEY set: {'yes' if env_vars['APP_KEY'] else 'NO - MISSING'}")
+print(f"    DB_HOST: {env_vars['DB_HOST'] or 'EMPTY'}")
+print(f"    DB_DATABASE: {env_vars['DB_DATABASE'] or 'EMPTY'}")
+PYEOF
 
-echo "==> .env written"
-
-# Limpiar cache viejo y recachear con .env correcto
-php artisan config:clear
+# ── 3. Limpiar cache viejo y recachear ─────────────────────────────────────
+echo "==> Clearing and rebuilding cache..."
+php artisan config:clear  2>/dev/null || true
+php artisan route:clear   2>/dev/null || true
+php artisan view:clear    2>/dev/null || true
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
@@ -62,30 +77,21 @@ php artisan view:cache
 # Storage symlink
 [ ! -L /var/www/html/public/storage ] && php artisan storage:link 2>/dev/null || true
 
-# Migraciones en background (Apache arranca ya)
+# ── 4. Migraciones en background ───────────────────────────────────────────
 (
     echo "==> [bg] Waiting for DB..."
     N=0
-    until php -r "
-        \$url = getenv('DATABASE_URL');
-        if (\$url) {
-            preg_match('|(postgresql|pgsql)://([^:]+):([^@]+)@([^:/]+):(\d+)/([^?]+)|', \$url, \$m);
-            \$dsn = \"pgsql:host={\$m[4]};port={\$m[5]};dbname={\$m[6]};sslmode=require\";
-            try { new PDO(\$dsn, \$m[2], \$m[3], [PDO::ATTR_TIMEOUT=>5]); echo 'OK'; exit(0); }
-            catch(Exception \$e) { exit(1); }
-        }
-        \$h=getenv('DB_HOST'); \$p=getenv('DB_PORT')?:'5432'; \$d=getenv('DB_DATABASE');
-        \$dsn=\"pgsql:host=\$h;port=\$p;dbname=\$d;sslmode=require\";
-        try { new PDO(\$dsn,getenv('DB_USERNAME'),getenv('DB_PASSWORD'),[PDO::ATTR_TIMEOUT=>5]); echo 'OK'; exit(0); }
-        catch(Exception \$e) { exit(1); }
-    " 2>/dev/null | grep -q OK; do
+    until php artisan db:show --no-interaction > /dev/null 2>&1; do
         N=$((N+1))
-        [ "$N" -ge 30 ] && echo "==> [bg] DB timeout" && break
+        [ "$N" -ge 30 ] && echo "==> [bg] DB timeout, trying migrate anyway..." && break
         sleep 3
     done
     echo "==> [bg] Running migrations..."
-    php artisan migrate --force && echo "==> [bg] Migrations OK" || echo "==> [bg] Migrations FAILED"
+    php artisan migrate --force \
+        && echo "==> [bg] Migrations OK" \
+        || echo "==> [bg] Migrations FAILED - check logs"
 ) &
 
+# ── 5. Arrancar Apache ─────────────────────────────────────────────────────
 echo "==> Starting Apache on port 10000..."
 exec apache2-foreground
