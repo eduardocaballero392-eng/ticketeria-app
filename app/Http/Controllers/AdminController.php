@@ -116,7 +116,7 @@ class AdminController extends Controller
             ->leftJoin('usuario as usu', 'ticket.id_usuario', '=', 'usu.id_usuario') 
             ->whereNull('ticket.id_tecnico_asignado')
             ->whereNotIn('estado_ticket.nombre_estado', ['CERRADO', 'CANCELADO'])
-            ->orderByRaw("FIELD(prioridad.nombre, 'Crítica', 'Alta', 'Media', 'Baja')")
+            ->orderByRaw("CASE prioridad.nombre WHEN 'Crítica' THEN 1 WHEN 'Alta' THEN 2 WHEN 'Media' THEN 3 WHEN 'Baja' THEN 4 ELSE 5 END")
             ->orderByDesc('ticket.created_at')
             ->limit(8)
             ->select(
