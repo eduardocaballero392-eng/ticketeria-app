@@ -25,7 +25,7 @@ env_vars = {
     "APP_ENV":        os.environ.get("APP_ENV", "production"),
     "APP_KEY":        os.environ.get("APP_KEY", ""),
     "APP_DEBUG":      os.environ.get("APP_DEBUG", "true"),
-    "APP_URL":        os.environ.get("APP_URL", "http://localhost"),
+    "APP_URL":        os.environ.get("APP_URL", "https://ticketeria-app.onrender.com"),
     "LOG_CHANNEL":    "stderr",
     "LOG_LEVEL":      os.environ.get("LOG_LEVEL", "debug"),
     "DB_CONNECTION":  "pgsql",
