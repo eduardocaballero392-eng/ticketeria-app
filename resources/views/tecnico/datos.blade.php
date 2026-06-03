@@ -3,6 +3,10 @@
     @include('components.tecnico.sidebar-tecnico')
     @include('components.notificaciones.alertas')
 
+    {{-- CSS y JS de la librería de banderas (Cargados de forma segura) --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+
     <main class="main-content">
         <div class="content-wrapper">
             <div class="header">
@@ -61,17 +65,17 @@
 
                         <div class="input-group">
                             <label>Nombre</label>
-                            <input type="text" name="nombre" value="{{ old('nombre', $tecnico->nombre) }}" required>
+                            <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $tecnico->nombre) }}" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo se permiten letras" required>
                         </div>
 
                         <div class="input-group">
                             <label>Apellido Paterno</label>
-                            <input type="text" name="apellido_paterno" value="{{ old('apellido_paterno', $tecnico->apellido_paterno) }}" required>
+                            <input type="text" id="apellido_paterno" name="apellido_paterno" value="{{ old('apellido_paterno', $tecnico->apellido_paterno) }}" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo se permiten letras" required>
                         </div>
 
                         <div class="input-group">
                             <label>Apellido Materno</label>
-                            <input type="text" name="apellido_materno" value="{{ old('apellido_materno', $tecnico->apellido_materno) }}" required>
+                            <input type="text" id="apellido_materno" name="apellido_materno" value="{{ old('apellido_materno', $tecnico->apellido_materno) }}" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo se permiten letras" required>
                         </div>
 
                         <div class="input-group">
@@ -97,8 +101,9 @@
                         <div class="input-group-phone">
                             <label>Teléfono</label>
                             <div class="phone-container">
-                                <input type="text" name="codigo_pais" value="{{ $tecnico->codigo_pais ?? '+51' }}" style="width: 60px; text-align: center;" placeholder="+51" required>
-                                <input type="text" name="telefono" value="{{ old('telefono', $tecnico->telefono) }}" style="flex: 1;" required>
+                                {{-- Input invisible para mandar el código de país sin romper tu backend --}}
+                                <input type="hidden" id="codigo_pais" name="codigo_pais" value="{{ old('codigo_pais', $tecnico->codigo_pais ?? '+51') }}">
+                                <input type="text" id="telefono" name="telefono" value="{{ old('telefono', $tecnico->telefono) }}" maxlength="15" style="flex: 1;" required>
                             </div>
                         </div>
                     </div>
@@ -124,7 +129,7 @@
 </div>
 
 <style>
-    /* REUTILIZANDO TU CSS BASE (IDÉNTICO AL DE USUARIO) */
+    /* REUTILIZANDO TU CSS BASE */
     .dashboard-layout { display: flex; min-height: 100vh; }
     .main-content { flex: 1; margin-left: 260px; padding: 40px; background: #eef4fb; transition: margin-left 0.35s; min-width: 0; }
     body.sb-collapsed .main-content { margin-left: 70px; }
@@ -150,9 +155,15 @@
     
     .input-readonly { background: #f5f9fe !important; color: #8aaac8 !important; cursor: not-allowed; }
 
-    /* Estilo para teléfono */
-    .phone-container { display: flex; gap: 8px; }
-    .phone-container input { padding: 11px 14px; border: 1px solid #d0e6f7; border-radius: 9px; font-size: 13.5px; }
+    /* Estilo para teléfono CORREGIDO con el padding dinámico */
+    .input-group-phone { display: flex; flex-direction: column; gap: 6px; }
+    .input-group-phone label { font-size: 11.5px; font-weight: 600; color: #3a6a9a; text-transform: uppercase; }
+    .phone-container { width: 100%; }
+    .iti { width: 100%; }
+    
+    /* El truco está aquí: agregamos !important al padding-left para darle espacio a la bandera */
+    .phone-container input { padding: 11px 14px; padding-left: 90px !important; border: 1px solid #d0e6f7; border-radius: 9px; font-size: 13.5px; width: 100% !important; box-sizing: border-box; outline: none; transition: 0.2s; }
+    .phone-container input:focus { border-color: #1a7fd4; box-shadow: 0 0 0 3px rgba(26, 127, 212, 0.1); }
 
     .form-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 28px; padding-top: 22px; border-top: 1px solid #e8f2fb; }
     .footer-hint { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7aabcc; }
@@ -186,16 +197,50 @@
     (function () {
         const form    = document.getElementById('perfil-form');
         const btnSave = document.getElementById('btn-guardar');
+        const inputTelefono = document.getElementById("telefono");
+        const inputCodigoPais = document.getElementById("codigo_pais");
+
+        // 1. Inicializar la librería intl-tel-input
+        let iti = null;
+        if (inputTelefono) {
+            iti = window.intlTelInput(inputTelefono, {
+                initialCountry: "pe",
+                separateDialCode: true, // Esto hace que el +51 sea visible al lado de la bandera
+                preferredCountries: ["pe", "cl", "co", "ar"],
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+            });
+        }
 
         // Captura los valores originales al cargar la página
         const originales = {};
-        form.querySelectorAll('input:not([readonly])').forEach(input => {
+        form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
             originales[input.name] = input.value;
         });
 
+        // 2. Funciones de limpieza en tiempo real
+        function limpiarSoloLetras(e) {
+            e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, "");
+            verificarCambios();
+        }
+
+        function limpiarSoloNumeros(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, "");
+            verificarCambios();
+        }
+
+        // Asignar los escuchadores en tiempo real
+        const campoNombre = document.getElementById("nombre");
+        const campoApPaterno = document.getElementById("apellido_paterno");
+        const campoApMaterno = document.getElementById("apellido_materno");
+
+        if (campoNombre) campoNombre.addEventListener("input", limpiarSoloLetras);
+        if (campoApPaterno) campoApPaterno.addEventListener("input", limpiarSoloLetras);
+        if (campoApMaterno) campoApMaterno.addEventListener("input", limpiarSoloLetras);
+        if (inputTelefono) inputTelefono.addEventListener("input", limpiarSoloNumeros);
+
         // Detecta si algo cambió
         function verificarCambios() {
-            const hayCambio = Array.from(form.querySelectorAll('input:not([readonly])')).some(input => {
+            const hayCambio = Array.from(form.querySelectorAll('input:not([readonly]):not([type="hidden"])')).some(input => {
                 return input.value !== originales[input.name];
             });
 
@@ -204,8 +249,16 @@
             btnSave.style.cursor   = hayCambio ? 'pointer' : 'not-allowed';
         }
 
-        form.querySelectorAll('input:not([readonly])').forEach(input => {
+        // Escuchar cambios estándar
+        form.querySelectorAll('input:not([readonly]):not([type="hidden"])').forEach(input => {
             input.addEventListener('input', verificarCambios);
+        });
+
+        // 3. Guardar el código del país seleccionado antes de enviar el formulario
+        form.addEventListener('submit', function() {
+            if (iti) {
+                inputCodigoPais.value = "+" + iti.getSelectedCountryData().dialCode;
+            }
         });
 
         // Llamada inicial para aplicar estado deshabilitado

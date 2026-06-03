@@ -108,7 +108,7 @@
                     </div>
                     <div>
                         <label style="font-size:.78rem;font-weight:600;color:#374151;display:block;margin-bottom:5px">DNI / Documento <span style="color:#059669">*</span></label>
-                        <input id="usu_dni" type="text" placeholder="Máx. 15 dígitos" maxlength="15"
+                        <input id="usu_dni" type="text" placeholder="Máx. 15 dígitos" maxlength="15" autocomplete="off"
                                oninput="if(this.value.length >= 15) { showNotification('danger', 'Error', 'Solo se permite un máximo de 15 dígitos'); } this.value=this.value.replace(/[^0-9]/g,'');generarDatosUsuario()"
                                style="width:100%;padding:10px 13px;border:2px solid #d1fae5;border-radius:10px;font-size:.9rem;outline:none;transition:.2s;box-sizing:border-box;background:#f0fdf4;color:#111827"
                                onfocus="this.style.borderColor='#059669';this.style.background='#fff'"
@@ -171,6 +171,17 @@
 <style>
 @keyframes uSlideIn { from{transform:translateY(-20px) scale(.97);opacity:0} to{transform:none;opacity:1} }
 .usu-cli-item.selected { border-color:#059669 !important; background:#f0fdf4 !important; }
+
+/* ── PARCHE CSS PARA MOVER LA ALERTA FLOTANTE AL FRENTE ── */
+div[class*="notification"], 
+div[class*="alert"], 
+div[class*="toast"],
+div[id*="notification"], 
+div[id*="alert"] {
+    z-index: 100005 !important; /* Fuerza a la alerta a estar al frente del fondo oscuro */
+    right: 24px !important;     /* La empuja hacia adentro de la pantalla para que no se corte */
+    top: 24px !important;       /* Separación del techo de la pantalla */
+}
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
