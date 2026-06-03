@@ -89,6 +89,10 @@ php artisan view:cache
     php artisan migrate --force \
         && echo "==> [bg] Migrations OK" \
         || echo "==> [bg] Migrations FAILED - check logs"
+    echo "==> [bg] Running seeders..."
+    php artisan db:seed --class=AdminUserSeeder --force \
+        && echo "==> [bg] Seeder OK" \
+        || echo "==> [bg] Seeder already ran or failed"
 ) &
 
 # ── 5. Arrancar Apache ─────────────────────────────────────────────────────

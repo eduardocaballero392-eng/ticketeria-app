@@ -10,16 +10,24 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('tecnico')->insert([
-            'codigo_tecnico'   => 'ADM001',
-            'nombre'           => 'Admin',
-            'apellido_paterno' => 'Principal', // CORREGIDO
-            'apellido_materno' => null,        // opcional
-            'dni'              => 60824920,
-            'correo'           => 'admin@empresa.com',
-            'contraseña'       => Hash::make('admin123'), // coincide con la columna
-            'id_cargo'         => 1,// asegúrate que exista el cargo admin en la tabla cargo
-            'activo'           => true,
-        ]);
+        // firstOrCreate: no falla si ya existe
+        $exists = DB::table('tecnico')->where('correo', 'admin@empresa.com')->exists();
+
+        if (!$exists) {
+            DB::table('tecnico')->insert([
+                'codigo_tecnico'   => 'ADM001',
+                'nombre'           => 'Admin',
+                'apellido_paterno' => 'Principal',
+                'apellido_materno' => null,
+                'dni'              => '60824920',
+                'correo'           => 'admin@empresa.com',
+                'contraseña'       => Hash::make('admin123'),
+                'id_cargo'         => 1,
+                'activo'           => true,
+            ]);
+            echo "Admin user created.\n";
+        } else {
+            echo "Admin user already exists, skipping.\n";
+        }
     }
 }
