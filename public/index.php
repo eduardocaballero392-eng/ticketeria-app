@@ -5,6 +5,20 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+// TEMP DEBUG: mostrar errores reales en pantalla
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+set_exception_handler(function($e) {
+    http_response_code(500);
+    echo '<pre style="background:#1a1a1a;color:#ff6b6b;padding:20px;font-size:13px;">';
+    echo '<strong>ERROR:</strong> ' . htmlspecialchars($e->getMessage()) . "\n\n";
+    echo '<strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . "\n\n";
+    echo '<strong>Trace:</strong>' . "\n" . htmlspecialchars($e->getTraceAsString());
+    echo '</pre>';
+    exit(1);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
