@@ -38,7 +38,9 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
-        value: error
+        value: debug
+      - key: APP_DEBUG
+        value: "true"
       - key: DB_SSLMODE
         value: require
       # Mail — set these manually in the Render dashboard
